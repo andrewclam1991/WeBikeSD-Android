@@ -1,1 +1,1 @@
-include ':CyclePhillyAndroid'
+include ':CyclePhillyAndroid', ':webikesd'

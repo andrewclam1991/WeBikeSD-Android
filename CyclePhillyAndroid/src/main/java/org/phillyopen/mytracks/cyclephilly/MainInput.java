@@ -50,8 +50,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -89,7 +88,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class MainInput extends ActionBarActivity {
+public class MainInput extends AppCompatActivity {
 
     private Toolbar toolbar;
     private final static int MENU_USER_INFO = 0;
