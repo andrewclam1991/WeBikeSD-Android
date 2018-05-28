@@ -23,6 +23,7 @@ public interface DataSource<E extends BaseEntity> {
    * @return observable that when subscribed to, would fetch and emit the item
    * and error otherwise.
    */
+  @NonNull
   Flowable<Optional<E>> get(@NonNull String id);
 
   /**
@@ -30,6 +31,7 @@ public interface DataSource<E extends BaseEntity> {
    * @return a hot observable that when subscribed to, emits model updates to the
    * list of {@link E} items.
    */
+  @NonNull
   Flowable<List<E>> getAll();
 
   /**
@@ -38,6 +40,7 @@ public interface DataSource<E extends BaseEntity> {
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is complete and error otherwise.
    */
+  @NonNull
   Completable put(@NonNull E item);
 
   /**
@@ -46,6 +49,7 @@ public interface DataSource<E extends BaseEntity> {
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is complete and error otherwise.
    */
+  @NonNull
   Completable put(@NonNull List<E> items);
 
   /**
@@ -54,6 +58,7 @@ public interface DataSource<E extends BaseEntity> {
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is complete and error otherwise.
    */
+  @NonNull
   Completable update(@NonNull E item);
 
   /**
@@ -62,6 +67,7 @@ public interface DataSource<E extends BaseEntity> {
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is complete and error otherwise.
    */
+  @NonNull
   Completable delete(@NonNull String id);
 
   /**
@@ -69,5 +75,6 @@ public interface DataSource<E extends BaseEntity> {
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is complete and error otherwise.
    */
+  @NonNull
   Completable deleteAll();
 }
