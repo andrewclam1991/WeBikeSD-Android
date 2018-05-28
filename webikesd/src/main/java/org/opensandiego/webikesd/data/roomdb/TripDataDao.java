@@ -18,19 +18,19 @@ import io.reactivex.Flowable;
 public interface TripDataDao {
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  void insert(TripData tripData);
+  void put(TripData tripData);
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  void insertAll(List<TripData> tripData);
+  void putAll(List<TripData> tripData);
 
   @Update(onConflict = OnConflictStrategy.REPLACE)
   void update(TripData tripData);
 
   @Query("SELECT * from trips ORDER BY end_time ASC")
-  Flowable<List<TripData>> getTrips();
+  Flowable<List<TripData>> getAll();
 
   @Query("SELECT * FROM trips WHERE uid == :uid LIMIT 1")
-  Flowable<Optional<TripData>> getTrip(String uid);
+  Flowable<Optional<TripData>> get(String uid);
 
   @Query("DELETE FROM trips WHERE uid == :uid")
   void delete(String uid);
