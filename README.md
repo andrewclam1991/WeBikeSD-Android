@@ -24,6 +24,8 @@ from the following contributor(s), organization(s) and on the CycleTracks codeba
 
 #### Cycle Philly, 2013 Code for Philly #### 
 Philadelphia, PA. USA
+
+Author(s) and Contributor(s): 
  * Corey Acri <acri.corey@gmail.com>
  * Lloyd Emelle <lemelle@codeforamerica.org>
  * Kathryn Killebrew <banderkat@gmail.com>
@@ -32,17 +34,19 @@ Philadelphia, PA. USA
 Copyright 2012 Georgia Institute of Technology
 Atlanta, GA. USA
 
-Contributors:
+Author(s) and Contributor(s): 
 * Christopher Le Dantec <ledantec@gatech.edu>
 * Anhong Guo <guoanhong15@gmail.com>
 
 #### CycleTracks ####
 Copyright 2009, 2010 San Francisco County Transportation Authority
+
 100 Van Ness Ave FL26
 San Francisco, CA 94102 USA
 
 Author(s) and Contributor(s): 
 * Billy Charlton <modeling@sfcta.org>
+
 http://www.sfcta.org/cycletracks
 
 CycleTracks is released under the GNU General Public License, version 3.
