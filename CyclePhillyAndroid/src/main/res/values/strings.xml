@@ -9,16 +9,16 @@
 	<string name="startNewTrip">Start Trip!</string>
     <string name="weatherAlert"></string>
     <string name="currentTemperature"> -- </string>
-    <string name="cycleReferenceTripsStarted">https://cyclephilly.firebaseio.com/trips-started/2014/</string>
-    <!--<string name="tripsStats"> trips today |  trips total</string>-->
+    <string name="cycleReferenceTripsStarted">https://cyclephilly.firebaseio.com/tripData-started/2014/</string>
+    <!--<string name="tripsStats"> tripData today |  tripData total</string>-->
     <string name="tripsStats"></string>
 	<string name="pauseButtonLabel">Pause</string>
 	<string name="finishedButtonLabel">Finish</string>
-    <string name="didUsePublicTransit">Did you use public transit during this trip?</string>
-	<string name="enterTripInfo">And add any comments about your trip here</string>
-	<string name="promptPurpose">Select the main purpose of this trip</string>
+    <string name="didUsePublicTransit">Did you use public transit during this tripData?</string>
+	<string name="enterTripInfo">And add any comments about your tripData here</string>
+	<string name="promptPurpose">Select the main purpose of this tripData</string>
 	<string name="uploadProgressTitle">Sending…</string>
-	<string name="uploadProgressMessage">Sending your trip.\n\nThanks for using Cycle Philly!</string>
+	<string name="uploadProgressMessage">Sending your tripData.\n\nThanks for using Cycle Philly!</string>
 
 	<string name="cloudy">&#xe61d;</string>
 	<string-array name="ageArray">
@@ -71,7 +71,7 @@
 	</string-array>
 	
 	<string name="nearbyRacksRoutes">Nearby Bike Racks and Routes:</string>
-	<string name="mapOfTrip">Map of your trip:</string>
+	<string name="mapOfTrip">Map of your tripData:</string>
 	<string name="ride_indego_nearest">Nearby Stations</string>
 
 </resources>

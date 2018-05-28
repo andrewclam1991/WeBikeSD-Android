@@ -30,14 +30,17 @@ ext {
     complieSdkVersion = 27
     targetSdkVersion = 27
 
-    // Android Framework Libraries
+    // Android framework and support
     androidSupportVersion = '27.1.1'
     constraintLayoutVersion = '1.1.0'
     guavaVersion = '24.1-android'
+
+    // Android architecture
     roomVersion = '1.1.0'
     archLifecycleVersion = '1.1.1'
 
     // 3rd Party Libraries
+    googlePlayServiceVersion = "15.0.1"
     daggerVersion = "2.15"
     rxjavaVersion = '2.1.12'
     rxandroidVersion = '2.0.2'

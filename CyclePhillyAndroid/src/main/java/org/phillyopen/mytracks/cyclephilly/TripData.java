@@ -1,5 +1,5 @@
 /**	 Cycle Philly, Copyright 2014 Code for Philly
- *   
+ *
  *   @author Lloyd Emelle <lloyd@codeforamerica.org>
  *   @author Christopher Le Dantec <ledantec@gatech.edu>
  *   @author Anhong Guo <guoanhong15@gmail.com>
@@ -143,7 +143,7 @@ public class TripData {
 		mDb.deleteTrip(tripid);
 		mDb.close();
 	}
-	
+
 	private void readPoints() {
 		try {
 			mDb.openReadOnly();
@@ -169,10 +169,10 @@ public class TripData {
                 double lgt = points.getDouble(COL_LGT);
                 double time = points.getDouble(COL_TIME);
                 float acc = (float) points.getDouble(COL_ACC);
-                
+
                 myPts.add(new LatLng(lat, lgt));
                 myTimesAcc.add(DateFormat.getInstance().format(time) + '\n' + String.format("%1.1f mph", acc));
-                
+
 				points.moveToNext();
 			}
 			points.close();
@@ -193,7 +193,7 @@ public class TripData {
 		readPoints();
 		return myPts;
 	}
-	
+
 	public List<String> getTimesAcc() {
 		// If already built, don't build again!
 		if (myTimesAcc != null && myTimesAcc.size() > 0) {

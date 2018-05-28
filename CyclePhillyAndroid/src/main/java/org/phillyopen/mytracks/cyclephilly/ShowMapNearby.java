@@ -45,7 +45,7 @@ public class ShowMapNearby extends FragmentActivity {
 	private LocationManager lm = null;
 	private LatLng mySpot = null;
 	TextView t1;
-    TextView t2; 
+    TextView t2;
     TextView t3;
 	
 	@Override
@@ -83,7 +83,7 @@ public class ShowMapNearby extends FragmentActivity {
 		
 		// check if already instantiated
 		if (mMap == null) {
-			mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+			mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
 			mMap.setMyLocationEnabled(true);
 			layout = (LinearLayout)findViewById(R.id.LinearLayout01);
 			ViewTreeObserver vto = layout.getViewTreeObserver();
