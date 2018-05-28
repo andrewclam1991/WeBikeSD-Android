@@ -1,45 +1,9 @@
-Cycle Philly, 2013 Code for Philly
------------
-Philadelphia, PA. USA
+## WeBikeSD, 2018 ##
+San Diego, CA. USA
 
- Contact: Corey Acri <acri.corey@gmail.com>
-             Lloyd Emelle <lemelle@codeforamerica.org>
-             Kathryn Killebrew <banderkat@gmail.com>
-
-Updated/Modified for Philadelphia's app deployment. Based on the
-CycleTracks codebase for SFCTA.
-
-Cycle Atlanta
------------
-Copyright 2012 Georgia Institute of Technology
-Atlanta, GA. USA
-
-@author Christopher Le Dantec <ledantec@gatech.edu>
-@author Anhong Guo <guoanhong15@gmail.com>
-
-Updated/Modified for Atlanta's app deployment. Based on the
-CycleTracks codebase for SFCTA.
-
-CycleTracks
------------
-Copyright 2009, 2010 San Francisco County Transportation Authority
-100 Van Ness Ave FL26
-San Francisco, CA 94102 USA
-
-Code written by Billy Charlton.
-
-contact email: modeling@sfcta.org
-http://www.sfcta.org/cycletracks
-
-CycleTracks is released under the GNU General Public License, version 3.
-See 'COPYING' for a detailed description of the GNU GPL.
-
-Installation notes
------------
-
-Android Studio is required to build this project. You will also need to install the "Google Repository" add-on using the Android SDK manager.
-
------------
+### Installation notes ###
+Android Studio is required to build this project. You will also need to 
+install the "Google Repository" add-on using the Android SDK manager.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -53,3 +17,35 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+## Attributions ##
+Updated/Modified for San Diego's app deployment. Based and built on top of the work
+from the following contributor(s), organization(s) and on the CycleTracks codebase for SFCTA.
+
+#### Cycle Philly, 2013 Code for Philly #### 
+Philadelphia, PA. USA
+ * Corey Acri <acri.corey@gmail.com>
+ * Lloyd Emelle <lemelle@codeforamerica.org>
+ * Kathryn Killebrew <banderkat@gmail.com>
+
+#### Cycle Atlanta ####
+Copyright 2012 Georgia Institute of Technology
+Atlanta, GA. USA
+
+Contributors:
+* Christopher Le Dantec <ledantec@gatech.edu>
+* Anhong Guo <guoanhong15@gmail.com>
+
+#### CycleTracks ####
+Copyright 2009, 2010 San Francisco County Transportation Authority
+100 Van Ness Ave FL26
+San Francisco, CA 94102 USA
+
+Author(s) and Contributor(s): 
+* Billy Charlton <modeling@sfcta.org>
+http://www.sfcta.org/cycletracks
+
+CycleTracks is released under the GNU General Public License, version 3.
+See 'COPYING' for a detailed description of the GNU GPL.
+
+
