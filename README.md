@@ -1,26 +1,45 @@
 ## WeBikeSD, 2018 ##
 San Diego, CA. USA
 
-### Installation notes ###
-Android Studio is required to build this project. You will also need to 
-install the "Google Repository" add-on using the Android SDK manager.
+Project contributor: [Andrew Lam](https://github.com/andrewclam1991)
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+### Summary
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+This is the dev fork to modernize and refactor the WeBikeSD app to have a modern and
+maintainable architecture. Uses MVVM (Model-View-ViewModel) + RxJava.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+### Dependencies
 
-## Attributions ##
-Updated/Modified for San Diego's app deployment. Based and built on top of the work
-from the following contributor(s), organization(s) and on the CycleTracks codebase for SFCTA.
+* [RxJava](https://github.com/ReactiveX/RxJava)
+* [RxAndroid](https://github.com/ReactiveX/RxAndroid)
+* [SqlBrite](https://github.com/square/sqlbrite)
+
+## Features
+
+### Complexity - understandability
+
+#### Use of architectural frameworks/libraries/tools:
+
+Building an app with RxJava is not trivial as it uses new concepts.
+
+#### Conceptual complexity
+
+Developers need to be familiar with RxJava, which is not trivial.
+
+### Testability
+
+#### Unit testing
+
+Very High. Given that the RxJava ``Observable``s are highly unit testable, unit tests are easy to implement.
+
+#### UI testing
+
+TODO
+
+## Attributions
+This project is **built by the community**, updated and modified for San Diego's App deployment. 
+Based on work from the following contributor(s), organization(s) and on the CycleTracks codebase 
+for SFCTA.
 
 #### Cycle Philly, 2013 Code for Philly #### 
 Philadelphia, PA. USA
