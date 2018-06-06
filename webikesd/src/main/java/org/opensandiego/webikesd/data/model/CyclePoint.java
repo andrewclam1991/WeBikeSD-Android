@@ -34,8 +34,11 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+/**
+ * Model class to store each cycling geo-position and data
+ */
 @Entity(tableName = "cycle_pts")
-public class CyclePoint implements BaseEntity {
+public class CyclePoint implements BaseModel {
 
   @PrimaryKey
   @NonNull

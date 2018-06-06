@@ -5,8 +5,27 @@ Project contributor: [Andrew Lam](https://github.com/andrewclam1991)
 
 ### Summary
 
-This is the dev fork to modernize and refactor the WeBikeSD app to have a modern and
-maintainable architecture. Uses MVVM (Model-View-ViewModel) + RxJava.
+This is the dev fork to modernize and refactor for WeBikeSD app usage.
+Implements MVP architecture. 
+
+Core Features: 
+alpha goal
+- contribution guideline and style
+- start bike trip manually using device GPS
+- show user trip distance 
+- show user trip time
+- save trip data locally
+- save trip per user account in remote backend (public domain)
+
+beta goal
+- start/stop bike trip automatically with activity recognition api
+- show user option for enabling activity recognition (background service)
+- write RESTful API for public and city to access bike ride data
+
+release goal
+- create eula and privacy notice
+- refresh UI/UX
+
 
 ### Dependencies
 
@@ -30,7 +49,8 @@ Developers need to be familiar with RxJava, which is not trivial.
 
 #### Unit testing
 
-Very High. Given that the RxJava ``Observable``s are highly unit testable, unit tests are easy to implement.
+Very High. Given that the RxJava ``Observable``s are highly unit testable, unit tests are easy to 
+implement.
 
 #### UI testing
 

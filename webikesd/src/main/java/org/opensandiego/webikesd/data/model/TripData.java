@@ -38,10 +38,10 @@ import android.support.annotation.NonNull;
 
 /**
  * TODO add documentation explanation to each field
- * Model class to store a trip's data in the model layer
+ * BaseModel class to store a trip's data in the model layer
  */
 @Entity(tableName = "trips")
-public class TripData implements BaseEntity {
+public class TripData implements BaseModel {
 
   @PrimaryKey
   @NonNull

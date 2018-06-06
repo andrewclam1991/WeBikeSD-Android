@@ -3,9 +3,9 @@ package org.opensandiego.webikesd.data.model;
 import android.support.annotation.NonNull;
 
 /**
- * Base class for each Model class
+ * Base class for each BaseModel class
  */
-public interface BaseEntity {
+public interface BaseModel {
 
   @NonNull
   String getUid();

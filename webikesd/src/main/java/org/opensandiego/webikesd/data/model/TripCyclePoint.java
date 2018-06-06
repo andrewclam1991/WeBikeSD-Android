@@ -30,10 +30,7 @@
 
 package org.opensandiego.webikesd.data.model;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 /**
@@ -43,7 +40,8 @@ import android.support.annotation.NonNull;
 @Entity(
     primaryKeys = {"uid","cyclePtUid", "tripUid"},
     tableName = "trip_cycle_pts")
-public class TripCyclePoint implements BaseEntity {
+public class TripCyclePoint implements BaseModel {
+
   @NonNull
   private String uid;
   @NonNull

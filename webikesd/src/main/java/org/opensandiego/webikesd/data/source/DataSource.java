@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.google.common.base.Optional;
 
-import org.opensandiego.webikesd.data.model.BaseEntity;
+import org.opensandiego.webikesd.data.model.BaseModel;
 
 
 import java.util.List;
@@ -15,7 +15,7 @@ import io.reactivex.Flowable;
 /**
  * API to the model layer
  */
-public interface DataSource<E extends BaseEntity> {
+public interface DataSource<E extends BaseModel> {
 
   /**
    * Get item by id of type {@link E} from its model layer
