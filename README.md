@@ -14,7 +14,7 @@ alpha goal
 - start bike trip manually using device GPS
 - show user trip distance 
 - show user trip time
-- save trip data locally
+- save trip data locally 
 - save trip per user account in remote backend (public domain)
 
 beta goal
