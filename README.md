@@ -26,7 +26,6 @@ release goal
 - create eula and privacy notice
 - refresh UI/UX
 
-
 ### Dependencies
 
 * [RxJava](https://github.com/ReactiveX/RxJava)

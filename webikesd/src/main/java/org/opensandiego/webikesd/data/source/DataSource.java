@@ -77,4 +77,10 @@ public interface DataSource<E extends BaseModel> {
    */
   @NonNull
   Completable deleteAll();
+
+  /**
+   * Forces implementation to clear in-memory cache
+   * and fetch data from the persistent model layer(s)
+   */
+  void refresh();
 }
