@@ -7,36 +7,37 @@ import org.opensandiego.webikesd.data.model.TripData;
 import org.opensandiego.webikesd.views.BasePresenter;
 import org.opensandiego.webikesd.views.BaseView;
 
+interface TrackingContract {
 
-interface RecordContract {
   interface View extends BaseView {
     void showTripTime(long duration);
     void showTripSpeed(double speed);
     void showTripDistance(double distance);
     void showTripStatus(String status);
     void showLocationStatus(String status);
+
+//    void checkLocationSettings();
+//    void checkLocationPermissions();
   }
 
-  interface ViewService extends BaseView, RecordState{
-    RecordState getState();
-    void setState(RecordState state);
+  interface Service extends BaseView, State {
     void setView(View view);
     void dropView();
     void showTrip(@NonNull TripData tripData);
+    void startLocationUpdates();
+    void stopLocationUpdates();
+    void dropService();
   }
 
-  interface RecordState{
+  interface Presenter extends BasePresenter<Service>, State{
+    void loadTrip();
+  }
+
+  interface State {
     void start();
-    void update();
+    void update(CyclePoint pt);
     void pause();
     void cancel();
     void complete();
   }
-
-  interface Presenter extends BasePresenter<ViewService>{
-    void loadTrip();
-    void saveTrip(TripData tripData);
-    void updateTrip(CyclePoint pt);
-  }
-
 }

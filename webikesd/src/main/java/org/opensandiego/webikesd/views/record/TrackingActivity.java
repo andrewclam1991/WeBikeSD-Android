@@ -1,6 +1,7 @@
 package org.opensandiego.webikesd.views.record;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -17,9 +18,14 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
 import com.opensandiego.webikesd.R;
 
-public class RecordActivity extends AppCompatActivity implements RecordContract.View {
-
-  private LocationRequest mLocationRequest;
+/**
+ * This {@link TrackingContract.View} class is responsible for
+ * 1. Request necessary user permissions with prompts.
+ * 2. Starting a background service for tracking location updates.
+ * 3. Delegate user start/pause/cancel/complete trip requests to a background service.
+ * 4. React to service updates (eg. Trip data) and show user trip status.
+ */
+public class TrackingActivity extends AppCompatActivity implements TrackingContract.View {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +34,43 @@ public class RecordActivity extends AppCompatActivity implements RecordContract.
     createLocationRequest();
   }
 
+  @Override
+  protected void onStart() {
+    super.onStart();
+    Intent intent = new Intent(this, TrackingService.class);
+    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    mService.dropView();
+    unbindService(mConnection);
+    mBound = false;
+  }
+
+  /** Details that defines callbacks for service binding, passed to bindService() */
+  private boolean mBound;
+  private TrackingContract.Service mService;
+  private ServiceConnection mConnection = new ServiceConnection() {
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+      TrackingService.ServiceBinder binder = (TrackingService.ServiceBinder) service;
+      mService = binder.getService();
+      mService.setView(TrackingActivity.this);
+      mBound = true;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName arg0) { mBound = false; }
+  };
+
   /**
    * Details checking if location settings are satisfied before starting
    * a location update session
    */
+  private LocationRequest mLocationRequest;
   private static final int REQUEST_CHECK_SETTINGS = 1001;
-
   protected void createLocationRequest() {
     mLocationRequest = new LocationRequest();
     mLocationRequest.setInterval(10000);
@@ -56,7 +93,7 @@ public class RecordActivity extends AppCompatActivity implements RecordContract.
           // Show the dialog by calling startResolutionForResult(),
           // and check the result in onActivityResult().
           ResolvableApiException resolvable = (ResolvableApiException) e;
-          resolvable.startResolutionForResult(RecordActivity.this,
+          resolvable.startResolutionForResult(TrackingActivity.this,
               REQUEST_CHECK_SETTINGS);
         } catch (IntentSender.SendIntentException sendEx) {
           // Ignore the error.
@@ -73,29 +110,9 @@ public class RecordActivity extends AppCompatActivity implements RecordContract.
     super.onActivityResult(requestCode, resultCode, data);
   }
 
-
-  /** Details that defines callbacks for service binding, passed to bindService() */
-  private boolean mBound;
-  private RecordContract.ViewService mService;
-  private ServiceConnection mConnection = new ServiceConnection() {
-
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder service) {
-      // We've bound to LocalService, cast the IBinder and get LocalService instance
-      RecordViewServiceImpl.ServiceBinder binder = (RecordViewServiceImpl.ServiceBinder) service;
-      mService = binder.getService();
-      mBound = true;
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName arg0) {
-      mBound = false;
-    }
-  };
-
   @Override
   public void showTripTime(long duration) {
-
+    // TODO impl formatting duration to user
   }
 
   @Override
