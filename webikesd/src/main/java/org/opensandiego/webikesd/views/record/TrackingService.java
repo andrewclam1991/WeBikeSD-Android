@@ -20,6 +20,10 @@ import org.opensandiego.webikesd.data.model.TripData;
 
 import java.util.UUID;
 
+/**
+ * Foreground Service that is responsible for tracking trip location
+ * and delegate saving the location updates to its presenter
+ */
 class TrackingService extends Service implements TrackingContract.Service {
   // Binder given to clients
   private final IBinder mBinder = new ServiceBinder();
@@ -53,6 +57,7 @@ class TrackingService extends Service implements TrackingContract.Service {
     // TODO implt show trip ui
     if (mView != null && mView.isActive()){
       mView.showTripDistance(tripData.getDistance());
+
     }
   }
 

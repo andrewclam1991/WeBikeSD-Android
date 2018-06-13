@@ -131,7 +131,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
     }
 
     @Override
-    public void update(CyclePoint pt) { /* Invalid request, ignore */ }
+    public void update(CyclePoint pt) { /* Invalid request, ignore */}
 
     @Override
     public void pause() { /* Already paused, ignore */ }

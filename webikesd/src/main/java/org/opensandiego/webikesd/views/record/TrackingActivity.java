@@ -37,6 +37,7 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
   @Override
   protected void onStart() {
     super.onStart();
+    // todo BEFORE even binding the service, check all necessary permissions and settings
     Intent intent = new Intent(this, TrackingService.class);
     bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
   }
