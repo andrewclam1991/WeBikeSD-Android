@@ -39,6 +39,7 @@ dependencies {
     implementation "com.google.guava:guava:$rootProject.guavaVersion"
 
     // Google play service dependencies
+    implementation "com.google.android.gms:play-services-location:$rootProject.googlePlayServiceVersion"
     implementation "com.google.android.gms:play-services-maps:$rootProject.googlePlayServiceVersion"
     implementation "com.google.android.gms:play-services-awareness:$rootProject.googlePlayServiceVersion"
 
@@ -50,6 +51,7 @@ dependencies {
     implementation "com.google.dagger:dagger:$rootProject.daggerVersion"
     implementation "com.google.dagger:dagger-android:$rootProject.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
 
