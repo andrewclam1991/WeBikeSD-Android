@@ -15,9 +15,8 @@ interface TrackingContract {
     void showTripDistance(double distance);
     void showTripStatus(String status);
     void showLocationStatus(String status);
-
-//    void checkLocationSettings();
-//    void checkLocationPermissions();
+    void checkLocationSettings();
+    void checkLocationPermissions();
   }
 
   interface Service extends BaseView, State {
@@ -31,6 +30,8 @@ interface TrackingContract {
 
   interface Presenter extends BasePresenter<Service>, State{
     void loadTrip();
+    void completeTrip();
+    void cancelTrip();
   }
 
   interface State {

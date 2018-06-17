@@ -32,7 +32,7 @@ ext {
 
     // Android framework and support
     androidSupportVersion = '27.1.1'
-    constraintLayoutVersion = '1.1.0'
+    constraintLayoutVersion = '1.1.2'
     guavaVersion = '24.1-android'
 
     // Android architecture

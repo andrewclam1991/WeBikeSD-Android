@@ -1,6 +1,15 @@
 package org.opensandiego.webikesd.views.record;
 
 import org.opensandiego.webikesd.data.model.CyclePoint;
+import org.opensandiego.webikesd.data.model.TripCyclePoint;
+import org.opensandiego.webikesd.data.model.TripData;
+import org.opensandiego.webikesd.data.source.DataSource;
+import org.opensandiego.webikesd.data.source.Repo;
+import org.opensandiego.webikesd.util.schedulers.SchedulerProvider;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 class TrackingPresenter implements TrackingContract.Presenter {
 
@@ -13,7 +22,23 @@ class TrackingPresenter implements TrackingContract.Presenter {
   private TrackingContract.State mTripStartedState;
   private TrackingContract.State mTripPausedState;
 
-  TrackingPresenter(){
+  // Data Source
+  @NonNull private final DataSource<TripCyclePoint> mTripCyclePtRepo;
+  @NonNull private final DataSource<TripData> mTripDataRepo;
+  @NonNull private final DataSource<CyclePoint> mCyclePtRepo;
+
+  private final SchedulerProvider mSchedulerProvider;
+  private final CompositeDisposable mCompositeDisposable;
+
+  TrackingPresenter(@NonNull @Repo DataSource<TripCyclePoint> tripCyclePtRepo,
+                    @NonNull @Repo DataSource<TripData> tripDataRepo,
+                    @NonNull @Repo DataSource<CyclePoint> cyclePtRepo,
+                    @NonNull SchedulerProvider schedulerProvider){
+    mTripCyclePtRepo = tripCyclePtRepo;
+    mTripDataRepo = tripDataRepo;
+    mCyclePtRepo = cyclePtRepo;
+    mSchedulerProvider = schedulerProvider;
+    mCompositeDisposable = new CompositeDisposable();
     setupInternalStates();
   }
 
@@ -32,11 +57,25 @@ class TrackingPresenter implements TrackingContract.Presenter {
   public void setView(TrackingContract.Service view) { mService = view; }
 
   @Override
-  public void dropView() { mService = null; }
+  public void dropView() {
+    mCompositeDisposable.clear();
+    mService = null;
+  }
 
   @Override
   public void loadTrip() {
-    // todo subscribe to flowable trip from repository,
+    // TODO subscribe to trip from repository,
+    mService.showTrip(null);
+  }
+
+  @Override
+  public void completeTrip() {
+    // TODO save trip to repository
+  }
+
+  @Override
+  public void cancelTrip() {
+    // TODO cancel trip / delete trip from repository
   }
 
   @Override
@@ -113,8 +152,21 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void complete() {
-      mCurrentState = mNoTripState;
-      mCurrentState.complete();
+      // TODO impl complete trip at started state
+      Disposable disposable = mTripDataRepo
+          .put(new TripData("randomid"))
+          .subscribeOn(mSchedulerProvider.io())
+          .observeOn(mSchedulerProvider.ui())
+          .subscribe(()->{
+            mCurrentState = mNoTripState;
+            mCurrentState.complete();
+          },e -> {
+            // TODO impl complete trip error
+            e.printStackTrace();
+          });
+
+      // add to execution queue
+      mCompositeDisposable.add(disposable);
     }
   }
 
@@ -138,16 +190,40 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void cancel() {
-      // todo delete trip
-      mCurrentState = mNoTripState;
-      mCurrentState.cancel();
+      // TODO impl delete trip at paused state
+      Disposable disposable = mTripDataRepo
+          .delete("randomId")
+          .subscribeOn(mSchedulerProvider.io())
+          .observeOn(mSchedulerProvider.ui())
+          .subscribe(()->{
+            mCurrentState = mNoTripState;
+            mCurrentState.cancel();
+          },e -> {
+            // TODO impl complete trip error
+            e.printStackTrace();
+          });
+
+      // add to execution queue
+      mCompositeDisposable.add(disposable);
     }
 
     @Override
     public void complete() {
-      // todo save trip
-      mCurrentState = mNoTripState;
-      mCurrentState.complete();
+      // TODO impl complete trip at paused state
+      Disposable disposable = mTripDataRepo
+          .put(new TripData("randomid"))
+          .subscribeOn(mSchedulerProvider.io())
+          .observeOn(mSchedulerProvider.ui())
+          .subscribe(()->{
+            mCurrentState = mNoTripState;
+            mCurrentState.complete();
+          },e -> {
+            // TODO impl complete trip error
+            e.printStackTrace();
+          });
+
+      // add to execution queue
+      mCompositeDisposable.add(disposable);
     }
   }
 }

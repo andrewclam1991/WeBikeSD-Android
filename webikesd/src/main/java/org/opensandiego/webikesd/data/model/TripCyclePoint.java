@@ -34,7 +34,6 @@ import android.arch.persistence.room.Entity;
 import android.support.annotation.NonNull;
 
 /**
- * TODO add documentation explanation to each field
  * Reference class between a {@link TripData} and its {@link CyclePoint}s
  */
 @Entity(

@@ -38,6 +38,7 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
   protected void onStart() {
     super.onStart();
     // todo BEFORE even binding the service, check all necessary permissions and settings
+
     Intent intent = new Intent(this, TrackingService.class);
     bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
   }
@@ -77,19 +78,26 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
     mLocationRequest.setInterval(10000);
     mLocationRequest.setFastestInterval(5000);
     mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+  }
 
+  @Override
+  public void checkLocationSettings() {
     LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
         .addLocationRequest(mLocationRequest);
 
     SettingsClient client = LocationServices.getSettingsClient(this);
     Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
-    task.addOnSuccessListener(response -> { /* location setting satisfied */ });
+    task.addOnSuccessListener(response -> {
+      /* location setting satisfied */
+      if (mService == null || !mBound){ return; }
+      mService.startLocationUpdates();
+    });
 
     task.addOnFailureListener(e -> {
       if (e instanceof ResolvableApiException) {
-        // Location settings are not satisfied, but this can be fixed
-        // by showing the user a dialog.
+        /* location setting not satisfied */
+        // but this can be fixed by showing the user a dialog.
         try {
           // Show the dialog by calling startResolutionForResult(),
           // and check the result in onActivityResult().
@@ -104,6 +112,11 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
   }
 
   @Override
+  public void checkLocationPermissions() {
+
+  }
+
+  @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == REQUEST_CHECK_SETTINGS && resultCode == RESULT_OK){
       createLocationRequest();
@@ -111,9 +124,10 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
     super.onActivityResult(requestCode, resultCode, data);
   }
 
+  // TODO implement populate user views
   @Override
   public void showTripTime(long duration) {
-    // TODO impl formatting duration to user
+
   }
 
   @Override
@@ -138,6 +152,6 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
 
   @Override
   public boolean isActive() {
-    return false;
+    return true;
   }
 }

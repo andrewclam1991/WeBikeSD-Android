@@ -54,10 +54,8 @@ class TrackingService extends Service implements TrackingContract.Service {
 
   @Override
   public void showTrip(@NonNull TripData tripData) {
-    // TODO implt show trip ui
     if (mView != null && mView.isActive()){
       mView.showTripDistance(tripData.getDistance());
-
     }
   }
 
