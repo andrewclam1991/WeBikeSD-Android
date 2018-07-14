@@ -1,13 +1,15 @@
 package org.opensandiego.webikesd.views.record;
 
-import android.annotation.SuppressLint;
+import android.Manifest;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -20,6 +22,8 @@ import org.opensandiego.webikesd.data.model.TripData;
 
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 /**
  * Foreground Service that is responsible for tracking trip location
  * and delegate saving the location updates to its presenter
@@ -28,12 +32,11 @@ class TrackingService extends Service implements TrackingContract.Service {
   // Binder given to clients
   private final IBinder mBinder = new ServiceBinder();
 
-  // View
+  @Inject
+  TrackingContract.Presenter mPresenter;
+
   @Nullable
   private TrackingContract.View mView;
-
-  // TODO inject presenter
-  private TrackingContract.Presenter mPresenter;
 
   // Google Play Service Location Provider
   private FusedLocationProviderClient mLocationClient;
@@ -49,12 +52,12 @@ class TrackingService extends Service implements TrackingContract.Service {
   @Override
   public void onCreate() {
     super.onCreate();
-    setupLocationProvider();
+    mLocationClient = LocationServices.getFusedLocationProviderClient(this);
   }
 
   @Override
   public void showTrip(@NonNull TripData tripData) {
-    if (mView != null && mView.isActive()){
+    if (mView != null && mView.isActive()) {
       mView.showTripDistance(tripData.getDistance());
     }
   }
@@ -81,39 +84,57 @@ class TrackingService extends Service implements TrackingContract.Service {
   @Override
   public IBinder onBind(Intent intent) { return mBinder; }
 
-  /**
-   * Setup Google Play Service location provider components
-   */
-  private void setupLocationProvider() {
-    mLocationClient = LocationServices.getFusedLocationProviderClient(this);
-    mLocationRequest = new LocationRequest()
-        .setInterval(10000)
-        .setFastestInterval(5000)
-        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    mLocationCallback = new LocationCallback() {
-      @Override
-      public void onLocationResult(LocationResult locationResult) {
-        if (locationResult == null) { return; }
-        for (Location location : locationResult.getLocations()) {
-          String id = UUID.randomUUID().toString();
-          double lat = location.getLatitude();
-          double lgt = location.getLongitude();
-          long timestamp = System.currentTimeMillis();
-          CyclePoint pt = new CyclePoint(id, lat, lgt, timestamp);
-          update(pt);
-        }
-      }
-    };
+  @NonNull
+  @Override
+  public LocationRequest getLocationRequest() {
+    if (mLocationRequest == null) {
+      mLocationRequest = new LocationRequest()
+          .setInterval(10000)
+          .setFastestInterval(5000)
+          .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+    return mLocationRequest;
   }
 
-  @SuppressLint("MissingPermission")
-  public void startLocationUpdates(){
-    mLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+  @NonNull
+  @Override
+  public LocationCallback getLocationCallback() {
+    if (mLocationCallback == null) {
+      mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+          if (locationResult == null) { return; }
+          for (Location location : locationResult.getLocations()) {
+            String id = UUID.randomUUID().toString();
+            double lat = location.getLatitude();
+            double lgt = location.getLongitude();
+            long timestamp = System.currentTimeMillis();
+            CyclePoint pt = new CyclePoint(id, lat, lgt, timestamp);
+            update(pt);
+          }
+        }
+      };
+    }
+    return mLocationCallback;
+  }
+
+  @Override
+  public void startLocationUpdates() {
+    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+        PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest
+        .permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+      // permission not granted, must explicitly request from user
+      if (mView != null && mView.isActive()) {
+        mView.checkLocationPermissions();
+      }
+      return;
+    }
+    mLocationClient.requestLocationUpdates(getLocationRequest(), getLocationCallback(), null);
   }
 
   @Override
   public void stopLocationUpdates() {
-    mLocationClient.removeLocationUpdates(mLocationCallback);
+    mLocationClient.removeLocationUpdates(getLocationCallback());
   }
 
   @Override

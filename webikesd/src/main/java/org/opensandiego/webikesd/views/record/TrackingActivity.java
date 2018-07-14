@@ -1,5 +1,6 @@
 package org.opensandiego.webikesd.views.record;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -7,10 +8,10 @@ import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
@@ -21,9 +22,10 @@ import com.opensandiego.webikesd.R;
 /**
  * This {@link TrackingContract.View} class is responsible for
  * 1. Request necessary user permissions with prompts.
- * 2. Starting a background service for tracking location updates.
- * 3. Delegate user start/pause/cancel/complete trip requests to a background service.
- * 4. React to service updates (eg. Trip data) and show user trip status.
+ * 2. Check if location settings satisfies requirements.
+ * 3. Starts and ends a background service for tracking location updates.
+ * 4. Delegate user start/pause/cancel/complete trip requests to a background service.
+ * 5. React to service updates (eg. Trip data) and show user trip status.
  */
 public class TrackingActivity extends AppCompatActivity implements TrackingContract.View {
 
@@ -31,14 +33,11 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_record);
-    createLocationRequest();
   }
 
   @Override
   protected void onStart() {
     super.onStart();
-    // todo BEFORE even binding the service, check all necessary permissions and settings
-
     Intent intent = new Intent(this, TrackingService.class);
     bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
   }
@@ -46,12 +45,16 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
   @Override
   protected void onStop() {
     super.onStop();
-    mService.dropView();
-    unbindService(mConnection);
-    mBound = false;
+    if (mService != null && mBound) {
+      mService.dropView();
+      unbindService(mConnection);
+      mBound = false;
+    }
   }
 
-  /** Details that defines callbacks for service binding, passed to bindService() */
+  /**
+   * Details that defines callbacks for service binding, passed to bindService()
+   */
   private boolean mBound;
   private TrackingContract.Service mService;
   private ServiceConnection mConnection = new ServiceConnection() {
@@ -68,29 +71,43 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
   };
 
   /**
-   * Details checking if location settings are satisfied before starting
-   * a location update session
+   * Check if user has given the app the necessary permissions
    */
-  private LocationRequest mLocationRequest;
-  private static final int REQUEST_CHECK_SETTINGS = 1001;
-  protected void createLocationRequest() {
-    mLocationRequest = new LocationRequest();
-    mLocationRequest.setInterval(10000);
-    mLocationRequest.setFastestInterval(5000);
-    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+  private static final int REQUEST_LOCATION_PERMISSION = 1001;
+  @Override
+  public void checkLocationPermissions() {
+    // Permission is not granted
+    // Should we show an explanation?
+    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+        Manifest.permission.ACCESS_FINE_LOCATION)) {
+      // Show an explanation to the user *asynchronously* -- don't block
+      // this thread waiting for the user's response! After the user
+      // sees the explanation, try again to request the permission.
+    } else {
+      // No explanation needed; request the permission
+      ActivityCompat.requestPermissions(this,
+          new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+          REQUEST_LOCATION_PERMISSION);
+    }
   }
 
+  /**
+   * Check if user's device location settings satisfies request requirements
+   */
+  private static final int REQUEST_CHECK_SETTINGS = 1002;
   @Override
   public void checkLocationSettings() {
+    if (mService == null || !mBound) { return; }
+
     LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-        .addLocationRequest(mLocationRequest);
+        .addLocationRequest(mService.getLocationRequest());
 
     SettingsClient client = LocationServices.getSettingsClient(this);
     Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
     task.addOnSuccessListener(response -> {
       /* location setting satisfied */
-      if (mService == null || !mBound){ return; }
+      if (mService == null || !mBound) { return; }
       mService.startLocationUpdates();
     });
 
@@ -102,8 +119,7 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
           // Show the dialog by calling startResolutionForResult(),
           // and check the result in onActivityResult().
           ResolvableApiException resolvable = (ResolvableApiException) e;
-          resolvable.startResolutionForResult(TrackingActivity.this,
-              REQUEST_CHECK_SETTINGS);
+          resolvable.startResolutionForResult(this, REQUEST_CHECK_SETTINGS);
         } catch (IntentSender.SendIntentException sendEx) {
           // Ignore the error.
         }
@@ -112,19 +128,18 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
   }
 
   @Override
-  public void checkLocationPermissions() {
-
-  }
-
-  @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == REQUEST_CHECK_SETTINGS && resultCode == RESULT_OK){
-      createLocationRequest();
-    }
+      switch (requestCode) {
+        case REQUEST_LOCATION_PERMISSION:
+          checkLocationPermissions();
+          break;
+        case REQUEST_CHECK_SETTINGS:
+          checkLocationSettings();
+          break;
+      }
     super.onActivityResult(requestCode, resultCode, data);
   }
 
-  // TODO implement populate user views
   @Override
   public void showTripTime(long duration) {
 

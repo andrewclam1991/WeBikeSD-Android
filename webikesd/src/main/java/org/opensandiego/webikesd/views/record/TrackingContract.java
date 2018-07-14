@@ -1,11 +1,17 @@
 package org.opensandiego.webikesd.views.record;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
 
 import org.opensandiego.webikesd.data.model.CyclePoint;
 import org.opensandiego.webikesd.data.model.TripData;
 import org.opensandiego.webikesd.views.BasePresenter;
 import org.opensandiego.webikesd.views.BaseView;
+
+import javax.annotation.Nonnegative;
 
 interface TrackingContract {
 
@@ -25,13 +31,18 @@ interface TrackingContract {
     void showTrip(@NonNull TripData tripData);
     void startLocationUpdates();
     void stopLocationUpdates();
+
+    @NonNull
+    LocationRequest getLocationRequest();
+
+    @NonNull
+    LocationCallback getLocationCallback();
+
     void dropService();
   }
 
   interface Presenter extends BasePresenter<Service>, State{
     void loadTrip();
-    void completeTrip();
-    void cancelTrip();
   }
 
   interface State {

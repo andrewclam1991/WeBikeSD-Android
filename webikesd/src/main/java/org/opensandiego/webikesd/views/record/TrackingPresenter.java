@@ -1,5 +1,7 @@
 package org.opensandiego.webikesd.views.record;
 
+import com.google.common.base.Optional;
+
 import org.opensandiego.webikesd.data.model.CyclePoint;
 import org.opensandiego.webikesd.data.model.TripCyclePoint;
 import org.opensandiego.webikesd.data.model.TripData;
@@ -7,13 +9,18 @@ import org.opensandiego.webikesd.data.source.DataSource;
 import org.opensandiego.webikesd.data.source.Repo;
 import org.opensandiego.webikesd.util.schedulers.SchedulerProvider;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
+@Singleton
 class TrackingPresenter implements TrackingContract.Presenter {
 
-  // Service (View)
+  // Service (Invisible View)
   private TrackingContract.Service mService;
 
   // Internal states
@@ -26,19 +33,23 @@ class TrackingPresenter implements TrackingContract.Presenter {
   @NonNull private final DataSource<TripCyclePoint> mTripCyclePtRepo;
   @NonNull private final DataSource<TripData> mTripDataRepo;
   @NonNull private final DataSource<CyclePoint> mCyclePtRepo;
+  @NonNull private final SchedulerProvider mSchedulerProvider;
+  @NonNull private final CompositeDisposable mCompositeDisposable;
+  @NonNull private final String mTripId;
+  @Nullable private TripData mTripData;
 
-  private final SchedulerProvider mSchedulerProvider;
-  private final CompositeDisposable mCompositeDisposable;
-
+  @Inject
   TrackingPresenter(@NonNull @Repo DataSource<TripCyclePoint> tripCyclePtRepo,
                     @NonNull @Repo DataSource<TripData> tripDataRepo,
                     @NonNull @Repo DataSource<CyclePoint> cyclePtRepo,
-                    @NonNull SchedulerProvider schedulerProvider){
+                    @NonNull SchedulerProvider schedulerProvider,
+                    @NonNull String tripId){
     mTripCyclePtRepo = tripCyclePtRepo;
     mTripDataRepo = tripDataRepo;
     mCyclePtRepo = cyclePtRepo;
     mSchedulerProvider = schedulerProvider;
     mCompositeDisposable = new CompositeDisposable();
+    mTripId = tripId;
     setupInternalStates();
   }
 
@@ -64,18 +75,22 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
   @Override
   public void loadTrip() {
-    // TODO subscribe to trip from repository,
-    mService.showTrip(null);
-  }
+    Disposable disposable = mTripDataRepo
+        .get(mTripId)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .subscribeOn(mSchedulerProvider.io())
+        .observeOn(mSchedulerProvider.ui())
+        .subscribe(
+            // onNext
+            tripData -> {
+              mTripData = tripData;
+              mService.showTrip(mTripData);
+            },
+            // onError
+            Throwable::printStackTrace);
 
-  @Override
-  public void completeTrip() {
-    // TODO save trip to repository
-  }
-
-  @Override
-  public void cancelTrip() {
-    // TODO cancel trip / delete trip from repository
+    mCompositeDisposable.add(disposable);
   }
 
   @Override
@@ -101,6 +116,8 @@ class TrackingPresenter implements TrackingContract.Presenter {
     @Override
     public void start() {
       // TODO create trip, and on created async do following
+
+
       mCurrentState = mTripStartedState;
       mService.startLocationUpdates();
     }
@@ -160,10 +177,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
           .subscribe(()->{
             mCurrentState = mNoTripState;
             mCurrentState.complete();
-          },e -> {
-            // TODO impl complete trip error
-            e.printStackTrace();
-          });
+          }, Throwable::printStackTrace);
 
       // add to execution queue
       mCompositeDisposable.add(disposable);
