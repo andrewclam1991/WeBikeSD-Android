@@ -25,7 +25,7 @@ import javax.inject.Inject;
  * - maintain client {@link FusedLocationProviderClient} to tracking device location
  * - delegate saving the location updates to its {@link TrackingContract.Presenter}
  */
-class TrackingService extends Service implements TrackingContract.Service {
+public class TrackingService extends Service implements TrackingContract.Service {
 
   @Inject
   TrackingContract.Presenter mPresenter;

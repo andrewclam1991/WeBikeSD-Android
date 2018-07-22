@@ -7,6 +7,7 @@
     <application
         android:name="org.opensandiego.webikesd.WeBikeSdApplication"
         android:allowBackup="true"
+        android:fullBackupContent=""
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -15,10 +16,16 @@
 
         <activity android:name="org.opensandiego.webikesd.views.record.MonitorActivity">
             <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name="org.opensandiego.webikesd.views.record.TrackingService">
+
+        </service>
 
     </application>
 
