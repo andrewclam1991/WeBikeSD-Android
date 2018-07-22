@@ -9,6 +9,8 @@ import org.opensandiego.webikesd.data.source.DataSource;
 import org.opensandiego.webikesd.data.source.Repo;
 import org.opensandiego.webikesd.util.schedulers.SchedulerProvider;
 
+import java.util.UUID;
+
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,48 +22,54 @@ import io.reactivex.disposables.Disposable;
 @Singleton
 class TrackingPresenter implements TrackingContract.Presenter {
 
-  // Service (Invisible View)
+  // Services (Invisible View)
+  @Nullable
   private TrackingContract.Service mService;
 
   // Internal states
-  private TrackingContract.State mCurrentState;
-  private TrackingContract.State mNoTripState;
-  private TrackingContract.State mTripStartedState;
-  private TrackingContract.State mTripPausedState;
+  @NonNull
+  private TrackingContract.TripState mCurrentTripState;
+  @NonNull
+  private TrackingContract.TripState mNoTripTripState;
+  @NonNull
+  private TrackingContract.TripState mTripStartedTripState;
+  @NonNull
+  private TrackingContract.TripState mTripPausedTripState;
 
-  // Data Source
-  @NonNull private final DataSource<TripCyclePoint> mTripCyclePtRepo;
-  @NonNull private final DataSource<TripData> mTripDataRepo;
-  @NonNull private final DataSource<CyclePoint> mCyclePtRepo;
-  @NonNull private final SchedulerProvider mSchedulerProvider;
-  @NonNull private final CompositeDisposable mCompositeDisposable;
-  @NonNull private final String mTripId;
-  @Nullable private TripData mTripData;
+  // Data
+  @NonNull
+  private final DataSource<TripCyclePoint> mTripCyclePtRepo;
+  @NonNull
+  private final DataSource<TripData> mTripDataRepo;
+  @NonNull
+  private final DataSource<CyclePoint> mCyclePtRepo;
+  @NonNull
+  private final SchedulerProvider mSchedulerProvider;
+  @NonNull
+  private final CompositeDisposable mCompositeDisposable;
+  @NonNull
+  private final String mTripId;
+  @Nullable
+  private TripData mTripData;
 
   @Inject
   TrackingPresenter(@NonNull @Repo DataSource<TripCyclePoint> tripCyclePtRepo,
                     @NonNull @Repo DataSource<TripData> tripDataRepo,
                     @NonNull @Repo DataSource<CyclePoint> cyclePtRepo,
                     @NonNull SchedulerProvider schedulerProvider,
-                    @NonNull String tripId){
+                    @NonNull String tripId) {
     mTripCyclePtRepo = tripCyclePtRepo;
     mTripDataRepo = tripDataRepo;
     mCyclePtRepo = cyclePtRepo;
     mSchedulerProvider = schedulerProvider;
     mCompositeDisposable = new CompositeDisposable();
     mTripId = tripId;
-    setupInternalStates();
-  }
 
-  /**
-   * Setup this class's internal state components
-   * {@link NoTripState}
-   */
-  private void setupInternalStates() {
-    mNoTripState = new NoTripState();
-    mTripStartedState = new TripStartedState();
-    mTripPausedState = new TripPausedState();
-    mCurrentState = mNoTripState;
+    // Setup internal states
+    mNoTripTripState = new NoTripState();
+    mTripStartedTripState = new TripStartedState();
+    mTripPausedTripState = new TripPausedState();
+    mCurrentTripState = mNoTripTripState;
   }
 
   @Override
@@ -83,161 +91,204 @@ class TrackingPresenter implements TrackingContract.Presenter {
         .observeOn(mSchedulerProvider.ui())
         .subscribe(
             // onNext
-            tripData -> {
-              mTripData = tripData;
-              mService.showTrip(mTripData);
-            },
+            this::setTripData,
             // onError
-            Throwable::printStackTrace);
+            Throwable::printStackTrace
+        );
 
     mCompositeDisposable.add(disposable);
   }
 
-  @Override
-  public void start() { mCurrentState.start(); }
-
-  @Override
-  public void update(CyclePoint pt) { mCurrentState.update(pt); }
-
-  @Override
-  public void pause() { mCurrentState.pause(); }
-
-  @Override
-  public void cancel() { mCurrentState.cancel(); }
-
-  @Override
-  public void complete() { mCurrentState.complete(); }
-
-  /**
-   * Concrete internal {@link TrackingContract.State} when there is no
-   * trip or trip has stopped.
-   */
-  private class NoTripState implements TrackingContract.State {
-    @Override
-    public void start() {
-      // TODO create trip, and on created async do following
-
-
-      mCurrentState = mTripStartedState;
-      mService.startLocationUpdates();
-    }
-
-    @Override
-    public void update(CyclePoint pt) { /* invalid request, ignore*/ }
-
-    @Override
-    public void pause() { /* invalid request, ignore */}
-
-    @Override
-    public void cancel() {
-      mService.stopLocationUpdates();
-      mService.dropService();
-    }
-
-    @Override
-    public void complete() {
-      mService.stopLocationUpdates();
-      mService.dropService();
-    }
+  private void setTripData(@NonNull TripData tripData){
+    mTripData = tripData;
   }
 
+  @Override
+  public void onTripStart() { mCurrentTripState.onTripStart(); }
+
+  @Override
+  public void onTripUpdate(double latitude, double longitude) { mCurrentTripState.onTripUpdate(latitude, longitude); }
+
+  @Override
+  public void onTripPaused() { mCurrentTripState.onTripPaused(); }
+
+  @Override
+  public void onTripCancelled() { mCurrentTripState.onTripCancelled(); }
+
+  @Override
+  public void onTripComplete() { mCurrentTripState.onTripComplete(); }
+
   /**
-   * Concrete internal {@link TrackingContract.State} when trip
-   * is active and started
+   * Concrete internal {@link TrackingContract.TripState} when there is no
+   * trip or trip has stopped.
    */
-  private class TripStartedState implements TrackingContract.State {
-
+  private class NoTripState implements TrackingContract.TripState {
     @Override
-    public void start() { /*invalid request, ignore*/}
+    public void onTripStart() {
+      // create and onTripStart a new trip
+      TripData tripData = new TripData(mTripId);
 
-    @Override
-    public void update(CyclePoint pt) {
-      // TODO update trip with repository
-    }
-
-    @Override
-    public void pause() {
-      mCurrentState = mTripPausedState;
-      mService.stopLocationUpdates();
-    }
-
-    @Override
-    public void cancel() {
-      mCurrentState = mNoTripState;
-      mCurrentState.cancel();
-    }
-
-    @Override
-    public void complete() {
-      // TODO impl complete trip at started state
       Disposable disposable = mTripDataRepo
-          .put(new TripData("randomid"))
+          .put(tripData)
           .subscribeOn(mSchedulerProvider.io())
           .observeOn(mSchedulerProvider.ui())
-          .subscribe(()->{
-            mCurrentState = mNoTripState;
-            mCurrentState.complete();
+          .subscribe(() -> {
+            mCurrentTripState = mTripStartedTripState;
+            if (mService == null || !mService.isActive()) { return; }
+            mService.startLocationUpdates();
           }, Throwable::printStackTrace);
 
       // add to execution queue
       mCompositeDisposable.add(disposable);
     }
+
+    @Override
+    public void onTripUpdate(double latitude, double longitude) {
+      // Ignore invalid request, no trip to update
+    }
+
+    @Override
+    public void onTripPaused() {
+      // Ignore invalid request, no trip to pause
+    }
+
+    @Override
+    public void onTripCancelled() {
+      if (mService == null || !mService.isActive()) { return; }
+      mService.stopLocationUpdates();
+      mService.dropService();
+    }
+
+    @Override
+    public void onTripComplete() {
+      if (mService == null || !mService.isActive()) { return; }
+      mService.stopLocationUpdates();
+      mService.dropService();
+    }
   }
 
   /**
-   * Concrete internal {@link TrackingContract.State} when trip
-   * is inactive and paused, but not completed.
+   * Concrete internal {@link TrackingContract.TripState} when trip
+   * is active and started
    */
-  private class TripPausedState implements TrackingContract.State {
+  private class TripStartedState implements TrackingContract.TripState {
+    @Nullable
+    private CyclePoint mLastKnownCyclePoint;
 
     @Override
-    public void start() {
-      mCurrentState = mTripStartedState;
+    public void onTripStart() {
+      // Ignore invalid request, trip already started
+    }
+
+    @Override
+    public void onTripUpdate(double latitude, double longitude) {
+      // Create pt object from location data
+      String id = UUID.randomUUID().toString();
+      long timestamp = System.currentTimeMillis();
+      CyclePoint currentPt = new CyclePoint(id, latitude, longitude, timestamp);
+
+      if (mLastKnownCyclePoint == null){
+        // first pt, no speed
+        mLastKnownCyclePoint = currentPt;
+        currentPt.setSpeed(0);
+      }else{
+        // TODO calculate speed base on distance and time elapsed
+        double elapsedTime = currentPt.getTime() - mLastKnownCyclePoint.getTime();
+        currentPt.setSpeed(10);
+      }
+
+      // Create trip <-> association record
+      String tripCyclePtUid = UUID.randomUUID().toString();
+      TripCyclePoint tripCyclePt = new TripCyclePoint(tripCyclePtUid,mTripId, currentPt.getUid());
+
+      // Update the cycle point and then add the trip <-> point association record
+      Disposable disposable = mCyclePtRepo
+          .put(currentPt)
+          .andThen(mTripCyclePtRepo.put(tripCyclePt))
+          .subscribeOn(mSchedulerProvider.io())
+          .observeOn(mSchedulerProvider.io())
+          .subscribe();
+
+      // add to execution queue
+      mCompositeDisposable.add(disposable);
+    }
+
+    @Override
+    public void onTripPaused() {
+      mCurrentTripState = mTripPausedTripState;
+      if (mService == null || !mService.isActive()) { return; }
+      mService.stopLocationUpdates();
+    }
+
+    @Override
+    public void onTripCancelled() {
+      mCurrentTripState = mTripPausedTripState;
+      mCurrentTripState.onTripCancelled();
+    }
+
+    @Override
+    public void onTripComplete() {
+      mCurrentTripState = mTripPausedTripState;
+      mCurrentTripState.onTripComplete();
+    }
+  }
+
+  /**
+   * Concrete internal {@link TrackingContract.TripState} when trip
+   * is inactive and paused.
+   */
+  private class TripPausedState implements TrackingContract.TripState {
+
+    @Override
+    public void onTripStart() {
+      mCurrentTripState = mTripStartedTripState;
+      if (mService == null || !mService.isActive()) { return; }
       mService.startLocationUpdates();
     }
 
     @Override
-    public void update(CyclePoint pt) { /* Invalid request, ignore */}
+    public void onTripUpdate(double latitude, double longitude) {
+      // Ignore invalid request, can't onTripUpdate a paused trip.
+    }
 
     @Override
-    public void pause() { /* Already paused, ignore */ }
+    public void onTripPaused() {
+      // Ignore invalid request, trip already paused.
+    }
 
     @Override
-    public void cancel() {
-      // TODO impl delete trip at paused state
+    public void onTripCancelled() {
+      // cancel trip by deleting from data source
       Disposable disposable = mTripDataRepo
-          .delete("randomId")
+          .delete(mTripId)
           .subscribeOn(mSchedulerProvider.io())
           .observeOn(mSchedulerProvider.ui())
-          .subscribe(()->{
-            mCurrentState = mNoTripState;
-            mCurrentState.cancel();
-          },e -> {
-            // TODO impl complete trip error
-            e.printStackTrace();
-          });
+          .subscribe(() -> {
+            mCurrentTripState = mNoTripTripState;
+            mCurrentTripState.onTripCancelled();
+          }, Throwable::printStackTrace);
 
       // add to execution queue
       mCompositeDisposable.add(disposable);
     }
 
     @Override
-    public void complete() {
-      // TODO impl complete trip at paused state
-      Disposable disposable = mTripDataRepo
-          .put(new TripData("randomid"))
-          .subscribeOn(mSchedulerProvider.io())
-          .observeOn(mSchedulerProvider.ui())
-          .subscribe(()->{
-            mCurrentState = mNoTripState;
-            mCurrentState.complete();
-          },e -> {
-            // TODO impl complete trip error
-            e.printStackTrace();
-          });
+    public void onTripComplete() {
+      // complete trip iff there is data to save
+      if (mTripData != null) {
+        mTripData.setEndTime(System.currentTimeMillis());
+        Disposable disposable = mTripDataRepo
+            .put(mTripData)
+            .subscribeOn(mSchedulerProvider.io())
+            .observeOn(mSchedulerProvider.ui())
+            .subscribe(() -> {
+              mCurrentTripState = mNoTripTripState;
+              mCurrentTripState.onTripComplete();
+            }, Throwable::printStackTrace);
 
-      // add to execution queue
-      mCompositeDisposable.add(disposable);
+        // add to execution queue
+        mCompositeDisposable.add(disposable);
+      }
     }
   }
 }

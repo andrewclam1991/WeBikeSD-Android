@@ -38,7 +38,7 @@ public interface DataSource<E extends BaseModel> {
    * Puts a single item of type {@link E} to the model layer
    * @param item item to be put into the model layer
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
-   * when the operation is complete and error otherwise.
+   * when the operation is onTripComplete and error otherwise.
    */
   @NonNull
   Completable put(@NonNull E item);
@@ -47,7 +47,7 @@ public interface DataSource<E extends BaseModel> {
    * Puts a list of items of type {@link E} to the model layer
    * @param items collection of items to be put into the model layer
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
-   * when the operation is complete and error otherwise.
+   * when the operation is onTripComplete and error otherwise.
    */
   @NonNull
   Completable put(@NonNull List<E> items);
@@ -56,7 +56,7 @@ public interface DataSource<E extends BaseModel> {
    * Updates a particular item of type {@link E} to the model layer
    * @param item the updated item data
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
-   * when the operation is complete and error otherwise.
+   * when the operation is onTripComplete and error otherwise.
    */
   @NonNull
   Completable update(@NonNull E item);
@@ -65,7 +65,7 @@ public interface DataSource<E extends BaseModel> {
    * Deletes a particular item by id of type {@link E} from the model layer
    * @param id unique id of the item
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
-   * when the operation is complete and error otherwise.
+   * when the operation is onTripComplete and error otherwise.
    */
   @NonNull
   Completable delete(@NonNull String id);
@@ -73,7 +73,7 @@ public interface DataSource<E extends BaseModel> {
   /**
    * Deletes all items of type {@link E} from the model layer
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
-   * when the operation is complete and error otherwise.
+   * when the operation is onTripComplete and error otherwise.
    */
   @NonNull
   Completable deleteAll();

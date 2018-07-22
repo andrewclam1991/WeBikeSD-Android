@@ -19,12 +19,14 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
 import com.opensandiego.webikesd.R;
 
+import javax.inject.Inject;
+
 /**
  * This {@link TrackingContract.View} class is responsible for
  * 1. Request necessary user permissions with prompts.
  * 2. Check if location settings satisfies requirements.
  * 3. Starts and ends a background service for tracking location updates.
- * 4. Delegate user start/pause/cancel/complete trip requests to a background service.
+ * 4. Delegate user onTripStart/onTripPaused/onTripCancelled/onTripComplete trip requests to a background service.
  * 5. React to service updates (eg. Trip data) and show user trip status.
  */
 public class TrackingActivity extends AppCompatActivity implements TrackingContract.View {

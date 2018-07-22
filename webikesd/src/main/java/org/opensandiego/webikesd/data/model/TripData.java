@@ -37,11 +37,10 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 /**
- * TODO add documentation explanation to each field
- * BaseModel class to store a trip's data in the model layer
+ * Store a cycle trip's data in the model layer
  */
 @Entity(tableName = "trips")
-public class TripData implements BaseModel {
+public final class TripData implements BaseModel {
 
   @PrimaryKey
   @NonNull
@@ -75,7 +74,7 @@ public class TripData implements BaseModel {
   private int status;
 
   @ColumnInfo(name = "distance")
-  private float distance;
+  private double distance;
 
   @ColumnInfo(name = "purpose")
   private String purpose;
@@ -189,11 +188,11 @@ public class TripData implements BaseModel {
     this.status = status;
   }
 
-  public float getDistance() {
+  public double getDistance() {
     return distance;
   }
 
-  public void setDistance(float distance) {
+  public void setDistance(double distance) {
     this.distance = distance;
   }
 

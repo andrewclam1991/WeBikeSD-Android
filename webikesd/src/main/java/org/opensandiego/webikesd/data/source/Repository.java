@@ -38,7 +38,7 @@ public class Repository<E extends BaseModel> implements DataSource<E> {
   final Map<String, E> mCachedItems;
 
   /**
-   * Marks the cache as invalid, to force an update the next time data is requested. This variable
+   * Marks the cache as invalid, to force an onTripUpdate the next time data is requested. This variable
    * has package local visibility so it can be accessed from tests.
    * Note: default set flag to false, so at init (with mCachedItems empty),
    * repository will always try local-first

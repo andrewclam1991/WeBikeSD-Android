@@ -1,17 +1,13 @@
 package org.opensandiego.webikesd.views.record;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 
-import org.opensandiego.webikesd.data.model.CyclePoint;
 import org.opensandiego.webikesd.data.model.TripData;
 import org.opensandiego.webikesd.views.BasePresenter;
 import org.opensandiego.webikesd.views.BaseView;
-
-import javax.annotation.Nonnegative;
 
 interface TrackingContract {
 
@@ -25,12 +21,12 @@ interface TrackingContract {
     void checkLocationPermissions();
   }
 
-  interface Service extends BaseView, State {
+  interface Service extends BaseView, TripState {
     void setView(View view);
     void dropView();
-    void showTrip(@NonNull TripData tripData);
     void startLocationUpdates();
     void stopLocationUpdates();
+    void dropService();
 
     @NonNull
     LocationRequest getLocationRequest();
@@ -38,18 +34,27 @@ interface TrackingContract {
     @NonNull
     LocationCallback getLocationCallback();
 
-    void dropService();
   }
 
-  interface Presenter extends BasePresenter<Service>, State{
+  // ================ End Framework Dependencies ====================== /
+
+  interface TripState {
+    void onTripStart();
+    void onTripUpdate(double latitude, double longitude);
+    void onTripPaused();
+    void onTripCancelled();
+    void onTripComplete();
+  }
+
+  /**
+   * Defines presenter responsibilities
+   * Note: Within the context of {@link TrackingContract}, this
+   * presenter is solely responsible for
+   * - managing {@link TripState}
+   * - react to service updates, uses model to persist the updates
+   */
+  interface Presenter extends BasePresenter<Service>, TripState {
     void loadTrip();
   }
 
-  interface State {
-    void start();
-    void update(CyclePoint pt);
-    void pause();
-    void cancel();
-    void complete();
-  }
 }

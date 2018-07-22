@@ -17,26 +17,27 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
-import org.opensandiego.webikesd.data.model.CyclePoint;
 import org.opensandiego.webikesd.data.model.TripData;
-
-import java.util.UUID;
 
 import javax.inject.Inject;
 
 /**
- * Foreground Service that is responsible for tracking trip location
- * and delegate saving the location updates to its presenter
+ * Foreground Service
+ * Class Responsibilities:
+ * - maintain client {@link FusedLocationProviderClient} to tracking device location
+ * - delegate saving the location updates to its {@link TrackingContract.Presenter}
  */
 class TrackingService extends Service implements TrackingContract.Service {
-  // Binder given to clients
-  private final IBinder mBinder = new ServiceBinder();
 
   @Inject
   TrackingContract.Presenter mPresenter;
 
+  // View
   @Nullable
   private TrackingContract.View mView;
+
+  // Service binder given to client View
+  private final IBinder mBinder = new ServiceBinder();
 
   // Google Play Service Location Provider
   private FusedLocationProviderClient mLocationClient;
@@ -56,29 +57,34 @@ class TrackingService extends Service implements TrackingContract.Service {
   }
 
   @Override
-  public void showTrip(@NonNull TripData tripData) {
-    if (mView != null && mView.isActive()) {
-      mView.showTripDistance(tripData.getDistance());
-    }
+  public int onStartCommand(Intent intent, int flags, int startId) {
+    mPresenter.setView(this);
+    return super.onStartCommand(intent, flags, startId);
+  }
+
+  @Override
+  public boolean onUnbind(Intent intent) {
+    mPresenter.dropView();
+    return super.onUnbind(intent);
   }
 
   @Override
   public boolean isActive() { return true; }
 
   @Override
-  public void start() { mPresenter.start(); }
+  public void onTripStart() { mPresenter.onTripStart(); }
 
   @Override
-  public void update(CyclePoint pt) { mPresenter.update(pt); }
+  public void onTripUpdate(double latitude, double longitude) { mPresenter.onTripUpdate(latitude,longitude); }
 
   @Override
-  public void pause() { mPresenter.pause(); }
+  public void onTripPaused() { mPresenter.onTripPaused(); }
 
   @Override
-  public void cancel() { mPresenter.cancel(); }
+  public void onTripCancelled() { mPresenter.onTripCancelled(); }
 
   @Override
-  public void complete() { mPresenter.complete(); }
+  public void onTripComplete() { mPresenter.onTripComplete(); }
 
   @Nullable
   @Override
@@ -105,18 +111,16 @@ class TrackingService extends Service implements TrackingContract.Service {
         public void onLocationResult(LocationResult locationResult) {
           if (locationResult == null) { return; }
           for (Location location : locationResult.getLocations()) {
-            String id = UUID.randomUUID().toString();
-            double lat = location.getLatitude();
-            double lgt = location.getLongitude();
-            long timestamp = System.currentTimeMillis();
-            CyclePoint pt = new CyclePoint(id, lat, lgt, timestamp);
-            update(pt);
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
+            onTripUpdate(latitude,longitude);
           }
         }
       };
     }
     return mLocationCallback;
   }
+
 
   @Override
   public void startLocationUpdates() {
