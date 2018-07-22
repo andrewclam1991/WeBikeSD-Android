@@ -12,14 +12,19 @@ interface TrackingContract {
 
   interface View extends BaseView {
     void checkLocationSettings();
+
     void checkLocationPermissions();
   }
 
   interface Service extends BaseView, TripState {
     void setView(View view);
+
     void dropView();
+
     void startLocationUpdates();
+
     void stopLocationUpdates();
+
     void dropService();
 
     @NonNull
@@ -34,9 +39,13 @@ interface TrackingContract {
 
   interface TripState {
     void onTripStart();
+
     void onTripUpdate(double latitude, double longitude);
+
     void onTripPaused();
+
     void onTripCancelled();
+
     void onTripComplete();
   }
 

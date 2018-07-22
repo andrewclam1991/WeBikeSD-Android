@@ -97,7 +97,7 @@ public final class TripData implements BaseModel {
   @ColumnInfo(name = "pause_started_at")
   private double pauseStartedAt = 0;
 
-  public TripData(@NonNull String uid){
+  public TripData(@NonNull String uid) {
     this.uid = uid;
     this.startTime = System.currentTimeMillis();
     this.endTime = System.currentTimeMillis();

@@ -99,7 +99,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
     mCompositeDisposable.add(disposable);
   }
 
-  private void setTripData(@NonNull TripData tripData){
+  private void setTripData(@NonNull TripData tripData) {
     mTripData = tripData;
   }
 
@@ -107,7 +107,10 @@ class TrackingPresenter implements TrackingContract.Presenter {
   public void onTripStart() { mCurrentTripState.onTripStart(); }
 
   @Override
-  public void onTripUpdate(double latitude, double longitude) { mCurrentTripState.onTripUpdate(latitude, longitude); }
+  public void onTripUpdate(double latitude, double longitude) {
+    mCurrentTripState.onTripUpdate
+        (latitude, longitude);
+  }
 
   @Override
   public void onTripPaused() { mCurrentTripState.onTripPaused(); }
@@ -187,11 +190,11 @@ class TrackingPresenter implements TrackingContract.Presenter {
       long timestamp = System.currentTimeMillis();
       CyclePoint currentPt = new CyclePoint(id, latitude, longitude, timestamp);
 
-      if (mLastKnownCyclePoint == null){
+      if (mLastKnownCyclePoint == null) {
         // first pt, no speed
         mLastKnownCyclePoint = currentPt;
         currentPt.setSpeed(0);
-      }else{
+      } else {
         // TODO calculate speed base on distance and time elapsed
         double elapsedTime = currentPt.getTime() - mLastKnownCyclePoint.getTime();
         currentPt.setSpeed(10);
@@ -199,7 +202,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
       // Create trip <-> association record
       String tripCyclePtUid = UUID.randomUUID().toString();
-      TripCyclePoint tripCyclePt = new TripCyclePoint(tripCyclePtUid,mTripId, currentPt.getUid());
+      TripCyclePoint tripCyclePt = new TripCyclePoint(tripCyclePtUid, mTripId, currentPt.getUid());
 
       // Update the cycle point and then add the trip <-> point association record
       Disposable disposable = mCyclePtRepo

@@ -9,7 +9,6 @@ import android.arch.persistence.room.Update;
 import com.google.common.base.Optional;
 
 import org.opensandiego.webikesd.data.model.CyclePoint;
-import org.opensandiego.webikesd.data.model.TripData;
 
 import java.util.List;
 

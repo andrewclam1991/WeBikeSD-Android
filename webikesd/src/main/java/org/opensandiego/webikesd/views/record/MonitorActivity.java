@@ -17,7 +17,8 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
-import com.opensandiego.webikesd.R;
+
+import org.opensandiego.webikesd.R;
 
 /**
  * This {@link MonitorContract.View} class is responsible for

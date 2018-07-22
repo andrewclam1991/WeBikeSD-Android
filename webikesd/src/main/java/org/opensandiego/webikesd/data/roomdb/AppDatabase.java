@@ -13,6 +13,8 @@ import org.opensandiego.webikesd.data.model.TripData;
 @Database(entities = {CyclePoint.class, TripData.class, TripCyclePoint.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
   public abstract CyclePointDao cyclePointDao();
+
   public abstract TripDataDao tripDataDao();
+
   public abstract TripCyclePointDao tripCyclePointDao();
 }

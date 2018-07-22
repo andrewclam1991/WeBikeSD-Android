@@ -37,7 +37,7 @@ import android.support.annotation.NonNull;
  * Reference class between a {@link TripData} and its {@link CyclePoint}s
  */
 @Entity(
-    primaryKeys = {"uid","cyclePtUid", "tripUid"},
+    primaryKeys = {"uid", "cyclePtUid", "tripUid"},
     tableName = "trip_cycle_pts")
 public class TripCyclePoint implements BaseModel {
 
@@ -48,7 +48,7 @@ public class TripCyclePoint implements BaseModel {
   @NonNull
   private String tripUid;
 
-  public TripCyclePoint(@NonNull String uid, @NonNull String tripUid, @NonNull String cyclePtUid){
+  public TripCyclePoint(@NonNull String uid, @NonNull String tripUid, @NonNull String cyclePtUid) {
     this.uid = uid;
     this.tripUid = tripUid;
     this.cyclePtUid = cyclePtUid;

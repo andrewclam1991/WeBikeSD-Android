@@ -24,17 +24,23 @@ public abstract class AppDatabaseModule {
 
   @Singleton
   @Provides
-  static CyclePointDao provideCyclePointDao(AppDatabase appDatabase)
-  { return appDatabase.cyclePointDao(); }
+  static CyclePointDao provideCyclePointDao(AppDatabase appDatabase) {
+    return appDatabase
+        .cyclePointDao();
+  }
 
   @Singleton
   @Provides
-  static TripDataDao provideTripDataDao(AppDatabase appDatabase)
-  { return appDatabase.tripDataDao(); }
+  static TripDataDao provideTripDataDao(AppDatabase appDatabase) {
+    return appDatabase.tripDataDao
+        ();
+  }
 
   @Singleton
   @Provides
-  static TripCyclePointDao provideTripCyclePointDao(AppDatabase appDatabase)
-  { return appDatabase.tripCyclePointDao(); }
+  static TripCyclePointDao provideTripCyclePointDao(AppDatabase appDatabase) {
+    return appDatabase
+        .tripCyclePointDao();
+  }
 
 }

@@ -73,7 +73,10 @@ class TrackingService extends Service implements TrackingContract.Service {
   public void onTripStart() { mPresenter.onTripStart(); }
 
   @Override
-  public void onTripUpdate(double latitude, double longitude) { mPresenter.onTripUpdate(latitude,longitude); }
+  public void onTripUpdate(double latitude, double longitude) {
+    mPresenter.onTripUpdate(latitude,
+        longitude);
+  }
 
   @Override
   public void onTripPaused() { mPresenter.onTripPaused(); }
@@ -111,7 +114,7 @@ class TrackingService extends Service implements TrackingContract.Service {
           for (Location location : locationResult.getLocations()) {
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
-            onTripUpdate(latitude,longitude);
+            onTripUpdate(latitude, longitude);
           }
         }
       };

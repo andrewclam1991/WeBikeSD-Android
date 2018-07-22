@@ -13,36 +13,36 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class SchedulerProvider implements BaseSchedulerProvider {
 
-    @Nullable
-    private static SchedulerProvider INSTANCE;
+  @Nullable
+  private static SchedulerProvider INSTANCE;
 
-    // Prevent direct instantiation.
-    private SchedulerProvider() {
-    }
+  // Prevent direct instantiation.
+  private SchedulerProvider() {
+  }
 
-    @NonNull
-    public static synchronized SchedulerProvider getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new SchedulerProvider();
-        }
-        return INSTANCE;
+  @NonNull
+  public static synchronized SchedulerProvider getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new SchedulerProvider();
     }
+    return INSTANCE;
+  }
 
-    @Override
-    @NonNull
-    public Scheduler computation() {
-        return Schedulers.computation();
-    }
+  @Override
+  @NonNull
+  public Scheduler computation() {
+    return Schedulers.computation();
+  }
 
-    @Override
-    @NonNull
-    public Scheduler io() {
-        return Schedulers.io();
-    }
+  @Override
+  @NonNull
+  public Scheduler io() {
+    return Schedulers.io();
+  }
 
-    @Override
-    @NonNull
-    public Scheduler ui() {
-        return AndroidSchedulers.mainThread();
-    }
+  @Override
+  @NonNull
+  public Scheduler ui() {
+    return AndroidSchedulers.mainThread();
+  }
 }

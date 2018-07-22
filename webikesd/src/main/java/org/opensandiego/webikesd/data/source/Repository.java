@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Generic Repository implementation of a {@link DataSource <>}
  * that provides implementation for common base CRUD methods
+ *
  * @param <E>
  */
 public class Repository<E extends BaseModel> implements DataSource<E> {
@@ -38,7 +39,8 @@ public class Repository<E extends BaseModel> implements DataSource<E> {
   final Map<String, E> mCachedItems;
 
   /**
-   * Marks the cache as invalid, to force an onTripUpdate the next time data is requested. This variable
+   * Marks the cache as invalid, to force an onTripUpdate the next time data is requested. This
+   * variable
    * has package local visibility so it can be accessed from tests.
    * Note: default set flag to false, so at init (with mCachedItems empty),
    * repository will always try local-first
@@ -48,7 +50,7 @@ public class Repository<E extends BaseModel> implements DataSource<E> {
 
   @VisibleForTesting
   protected Repository(@NonNull @Local DataSource<E> localDataSource,
-                       @NonNull @Remote DataSource<E> remoteDataSource){
+                       @NonNull @Remote DataSource<E> remoteDataSource) {
     mLocalDataSource = checkNotNull(localDataSource, "localDataSource can't be null!");
     mRemoteDataSource = checkNotNull(remoteDataSource, "remoteDataSource can't be null!");
     mCachedItems = new LinkedHashMap<>();
@@ -139,7 +141,7 @@ public class Repository<E extends BaseModel> implements DataSource<E> {
   @NonNull
   @Override
   public Completable delete(@NonNull String entityId) {
-    if (!mCachedItems.isEmpty() && mCachedItems.containsKey(entityId)) {
+    if (!mCachedItems.isEmpty()) {
       mCachedItems.remove(entityId);
     }
     return mLocalDataSource.delete(entityId).andThen(mRemoteDataSource.delete(entityId));
@@ -160,7 +162,8 @@ public class Repository<E extends BaseModel> implements DataSource<E> {
             .toList()
             .toFlowable()
         )
-        .takeWhile(items -> !items.isEmpty());// this completes the stream when the list becomes empty
+        .takeWhile(items -> !items.isEmpty());// this completes the stream when the list becomes
+    // empty
   }
 
   @NonNull
@@ -182,7 +185,7 @@ public class Repository<E extends BaseModel> implements DataSource<E> {
             E item = itemOptional.get();
             return saveItemToCache(item)
                 .andThen(Flowable.just(itemOptional));
-          }else{
+          } else {
             return Flowable.just(Optional.absent());
           }
         });
@@ -197,7 +200,7 @@ public class Repository<E extends BaseModel> implements DataSource<E> {
             return mLocalDataSource.put(item)
                 .andThen(saveItemToCache(item))
                 .andThen(Flowable.just(itemOptional));
-          }else{
+          } else {
             return Flowable.just(Optional.absent());
           }
         });

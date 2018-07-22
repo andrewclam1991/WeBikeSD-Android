@@ -7,9 +7,13 @@ public interface MonitorContract {
 
   interface View extends BaseView {
     void showTripTime(long duration);
+
     void showTripSpeed(double speed);
+
     void showTripDistance(double distance);
+
     void showTripStatus(String status);
+
     void showLocationStatus(String status);
   }
 

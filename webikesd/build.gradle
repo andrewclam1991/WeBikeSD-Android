@@ -20,11 +20,6 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
-    packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE-FIREBASE.txt'
-        exclude 'META-INF/NOTICE'
-    }
 }
 
 dependencies {

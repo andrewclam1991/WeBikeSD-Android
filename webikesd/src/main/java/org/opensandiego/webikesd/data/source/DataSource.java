@@ -6,7 +6,6 @@ import com.google.common.base.Optional;
 
 import org.opensandiego.webikesd.data.model.BaseModel;
 
-
 import java.util.List;
 
 import io.reactivex.Completable;
@@ -19,6 +18,7 @@ public interface DataSource<E extends BaseModel> {
 
   /**
    * Get item by id of type {@link E} from its model layer
+   *
    * @param id unique id of a {@link E} type
    * @return observable that when subscribed to, would fetch and emit the item
    * and error otherwise.
@@ -28,6 +28,7 @@ public interface DataSource<E extends BaseModel> {
 
   /**
    * Gets all items of type {@link E} from the model layer
+   *
    * @return a hot observable that when subscribed to, emits model updates to the
    * list of {@link E} items.
    */
@@ -36,6 +37,7 @@ public interface DataSource<E extends BaseModel> {
 
   /**
    * Puts a single item of type {@link E} to the model layer
+   *
    * @param item item to be put into the model layer
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is onTripComplete and error otherwise.
@@ -45,6 +47,7 @@ public interface DataSource<E extends BaseModel> {
 
   /**
    * Puts a list of items of type {@link E} to the model layer
+   *
    * @param items collection of items to be put into the model layer
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is onTripComplete and error otherwise.
@@ -54,6 +57,7 @@ public interface DataSource<E extends BaseModel> {
 
   /**
    * Updates a particular item of type {@link E} to the model layer
+   *
    * @param item the updated item data
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is onTripComplete and error otherwise.
@@ -63,6 +67,7 @@ public interface DataSource<E extends BaseModel> {
 
   /**
    * Deletes a particular item by id of type {@link E} from the model layer
+   *
    * @param id unique id of the item
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is onTripComplete and error otherwise.
@@ -72,6 +77,7 @@ public interface DataSource<E extends BaseModel> {
 
   /**
    * Deletes all items of type {@link E} from the model layer
+   *
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is onTripComplete and error otherwise.
    */
