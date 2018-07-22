@@ -5,18 +5,12 @@ import android.support.annotation.NonNull;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 
-import org.opensandiego.webikesd.data.model.TripData;
 import org.opensandiego.webikesd.views.BasePresenter;
 import org.opensandiego.webikesd.views.BaseView;
 
 interface TrackingContract {
 
   interface View extends BaseView {
-    void showTripTime(long duration);
-    void showTripSpeed(double speed);
-    void showTripDistance(double distance);
-    void showTripStatus(String status);
-    void showLocationStatus(String status);
     void checkLocationSettings();
     void checkLocationPermissions();
   }

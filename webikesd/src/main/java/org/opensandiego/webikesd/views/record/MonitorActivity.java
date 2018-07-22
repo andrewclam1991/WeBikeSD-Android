@@ -19,17 +19,19 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
 import com.opensandiego.webikesd.R;
 
-import javax.inject.Inject;
-
 /**
+ * This {@link MonitorContract.View} class is responsible for
+ * 1. Starts and ends a background service for tracking location updates.
+ * 2. Delegate user onTripStart/onTripPaused/onTripCancelled/onTripComplete trip requests to a
+ * background service.
+ * 3. React to service updates (eg. Trip data) and show user trip status.
+ * <p>
  * This {@link TrackingContract.View} class is responsible for
  * 1. Request necessary user permissions with prompts.
  * 2. Check if location settings satisfies requirements.
- * 3. Starts and ends a background service for tracking location updates.
- * 4. Delegate user onTripStart/onTripPaused/onTripCancelled/onTripComplete trip requests to a background service.
- * 5. React to service updates (eg. Trip data) and show user trip status.
  */
-public class TrackingActivity extends AppCompatActivity implements TrackingContract.View {
+public class MonitorActivity extends AppCompatActivity implements TrackingContract.View,
+    MonitorContract.View {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +66,7 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
     public void onServiceConnected(ComponentName className, IBinder service) {
       TrackingService.ServiceBinder binder = (TrackingService.ServiceBinder) service;
       mService = binder.getService();
-      mService.setView(TrackingActivity.this);
+      mService.setView(MonitorActivity.this);
       mBound = true;
     }
 
@@ -76,6 +78,7 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
    * Check if user has given the app the necessary permissions
    */
   private static final int REQUEST_LOCATION_PERMISSION = 1001;
+
   @Override
   public void checkLocationPermissions() {
     // Permission is not granted
@@ -97,6 +100,7 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
    * Check if user's device location settings satisfies request requirements
    */
   private static final int REQUEST_CHECK_SETTINGS = 1002;
+
   @Override
   public void checkLocationSettings() {
     if (mService == null || !mBound) { return; }
@@ -131,14 +135,14 @@ public class TrackingActivity extends AppCompatActivity implements TrackingContr
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-      switch (requestCode) {
-        case REQUEST_LOCATION_PERMISSION:
-          checkLocationPermissions();
-          break;
-        case REQUEST_CHECK_SETTINGS:
-          checkLocationSettings();
-          break;
-      }
+    switch (requestCode) {
+      case REQUEST_LOCATION_PERMISSION:
+        checkLocationPermissions();
+        break;
+      case REQUEST_CHECK_SETTINGS:
+        checkLocationSettings();
+        break;
+    }
     super.onActivityResult(requestCode, resultCode, data);
   }
 
