@@ -20,6 +20,8 @@ import com.google.android.gms.tasks.Task;
 
 import org.opensandiego.webikesd.R;
 
+import javax.annotation.Nullable;
+
 /**
  * This {@link MonitorContract.View} class is responsible for
  * 1. Starts and ends a background service for tracking location updates.
@@ -34,6 +36,13 @@ import org.opensandiego.webikesd.R;
 public class MonitorActivity extends AppCompatActivity implements TrackingContract.View,
     MonitorContract.View {
 
+  // Details that defines callbacks for service binding, passed to bindService()
+  private boolean mBound = false;
+  @Nullable
+  private TrackingContract.Service mService;
+  @Nullable
+  private ServiceConnection mServiceConnection;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -44,7 +53,7 @@ public class MonitorActivity extends AppCompatActivity implements TrackingContra
   protected void onStart() {
     super.onStart();
     Intent intent = new Intent(this, TrackingService.class);
-    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    bindService(intent, getServiceConnection(), Context.BIND_AUTO_CREATE);
   }
 
   @Override
@@ -52,28 +61,31 @@ public class MonitorActivity extends AppCompatActivity implements TrackingContra
     super.onStop();
     if (mService != null && mBound) {
       mService.dropView();
-      unbindService(mConnection);
+      unbindService(getServiceConnection());
       mBound = false;
     }
   }
 
   /**
-   * Details that defines callbacks for service binding, passed to bindService()
+   * @return definition of a {@link ServiceConnection} callback
    */
-  private boolean mBound;
-  private TrackingContract.Service mService;
-  private ServiceConnection mConnection = new ServiceConnection() {
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder service) {
-      TrackingService.ServiceBinder binder = (TrackingService.ServiceBinder) service;
-      mService = binder.getService();
-      mService.setView(MonitorActivity.this);
-      mBound = true;
-    }
+  private ServiceConnection getServiceConnection() {
+    if (mServiceConnection == null) {
+      mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+          TrackingService.ServiceBinder binder = (TrackingService.ServiceBinder) service;
+          mService = binder.getService();
+          mService.setView(MonitorActivity.this);
+          mBound = true;
+        }
 
-    @Override
-    public void onServiceDisconnected(ComponentName arg0) { mBound = false; }
-  };
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) { mBound = false; }
+      };
+    }
+    return mServiceConnection;
+  }
 
   /**
    * Check if user has given the app the necessary permissions
