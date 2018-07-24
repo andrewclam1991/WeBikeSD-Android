@@ -8,29 +8,29 @@ import android.arch.persistence.room.Update;
 
 import com.google.common.base.Optional;
 
-import org.opensandiego.webikesd.data.model.TripData;
+import org.opensandiego.webikesd.data.model.Trip;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
 
 @Dao
-public interface TripDataDao {
+public interface TripDao extends BaseDao<Trip> {
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  void put(TripData tripData);
+  void insert(Trip trip);
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  void putAll(List<TripData> tripData);
+  void insertAll(List<Trip> tripData);
 
   @Update(onConflict = OnConflictStrategy.REPLACE)
-  void update(TripData tripData);
+  void update(Trip trip);
 
   @Query("SELECT * from trips ORDER BY end_time ASC")
-  Flowable<List<TripData>> getAll();
+  Flowable<List<Trip>> getAll();
 
   @Query("SELECT * FROM trips WHERE uid == :uid LIMIT 1")
-  Flowable<Optional<TripData>> get(String uid);
+  Flowable<Optional<Trip>> get(String uid);
 
   @Query("DELETE FROM trips WHERE uid == :uid")
   void delete(String uid);

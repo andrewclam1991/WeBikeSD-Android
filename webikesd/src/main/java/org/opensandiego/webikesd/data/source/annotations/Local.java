@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.opensandiego.webikesd.data.source;
+package org.opensandiego.webikesd.data.source.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -24,6 +24,6 @@ import javax.inject.Qualifier;
 @Qualifier
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Repo {
+public @interface Local {
 
 }

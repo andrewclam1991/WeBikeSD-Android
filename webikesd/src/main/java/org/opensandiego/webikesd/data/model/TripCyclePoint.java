@@ -34,7 +34,7 @@ import android.arch.persistence.room.Entity;
 import android.support.annotation.NonNull;
 
 /**
- * Reference class between a {@link TripData} and its {@link CyclePoint}s
+ * Reference class between a {@link Trip} and its {@link CyclePoint}s
  */
 @Entity(
     primaryKeys = {"uid", "cyclePtUid", "tripUid"},

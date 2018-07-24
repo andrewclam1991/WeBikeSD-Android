@@ -7,10 +7,15 @@ import android.support.annotation.VisibleForTesting;
 import com.google.common.base.Optional;
 
 import org.opensandiego.webikesd.data.model.BaseModel;
+import org.opensandiego.webikesd.data.source.annotations.Local;
+import org.opensandiego.webikesd.data.source.annotations.Remote;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -23,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @param <E>
  */
+@Singleton
 public class Repository<E extends BaseModel> implements DataSource<E> {
 
   @NonNull
@@ -49,6 +55,7 @@ public class Repository<E extends BaseModel> implements DataSource<E> {
   boolean mCacheIsDirty = false;
 
   @VisibleForTesting
+  @Inject
   protected Repository(@NonNull @Local DataSource<E> localDataSource,
                        @NonNull @Remote DataSource<E> remoteDataSource) {
     mLocalDataSource = checkNotNull(localDataSource, "localDataSource can't be null!");
@@ -63,18 +70,18 @@ public class Repository<E extends BaseModel> implements DataSource<E> {
 
   @NonNull
   @Override
-  public Completable put(@NonNull E item) {
+  public Completable add(@NonNull E item) {
     mCachedItems.put(item.getUid(), checkNotNull(item));
-    return mLocalDataSource.put(item).andThen(mRemoteDataSource.put(item));
+    return mLocalDataSource.add(item).andThen(mRemoteDataSource.add(item));
   }
 
   @NonNull
   @Override
-  public Completable put(@NonNull List<E> items) {
+  public Completable add(@NonNull List<E> items) {
     for (E item : items) {
       mCachedItems.put(item.getUid(), checkNotNull(item));
     }
-    return mLocalDataSource.put(items).andThen(mRemoteDataSource.put(items));
+    return mLocalDataSource.add(items).andThen(mRemoteDataSource.add(items));
   }
 
   @NonNull
@@ -170,7 +177,7 @@ public class Repository<E extends BaseModel> implements DataSource<E> {
   private Flowable<List<E>> getAndSaveRemoteItems() {
     return mRemoteDataSource.getAll()
         .flatMap(items -> Flowable.fromIterable(items)
-            .doOnNext(item -> mLocalDataSource.put(item).andThen(saveItemToCache(item)))
+            .doOnNext(item -> mLocalDataSource.add(item).andThen(saveItemToCache(item)))
             .toList()
             .toFlowable()
         ).doOnComplete(() -> mCacheIsDirty = false);
@@ -197,7 +204,7 @@ public class Repository<E extends BaseModel> implements DataSource<E> {
         .flatMap(itemOptional -> {
           if (itemOptional.isPresent()) {
             E item = itemOptional.get();
-            return mLocalDataSource.put(item)
+            return mLocalDataSource.add(item)
                 .andThen(saveItemToCache(item))
                 .andThen(Flowable.just(itemOptional));
           } else {

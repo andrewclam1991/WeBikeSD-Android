@@ -12,7 +12,7 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 /**
- * API to the model layer
+ * Generic API to the model layer
  */
 public interface DataSource<E extends BaseModel> {
 
@@ -38,22 +38,22 @@ public interface DataSource<E extends BaseModel> {
   /**
    * Puts a single item of type {@link E} to the model layer
    *
-   * @param item item to be put into the model layer
+   * @param item item to be add into the model layer
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is completeTrip and error otherwise.
    */
   @NonNull
-  Completable put(@NonNull E item);
+  Completable add(@NonNull E item);
 
   /**
    * Puts a list of items of type {@link E} to the model layer
    *
-   * @param items collection of items to be put into the model layer
+   * @param items collection of items to be add into the model layer
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is completeTrip and error otherwise.
    */
   @NonNull
-  Completable put(@NonNull List<E> items);
+  Completable add(@NonNull List<E> items);
 
   /**
    * Updates a particular item of type {@link E} to the model layer

@@ -3,10 +3,12 @@ package org.opensandiego.webikesd.views.record;
 import com.google.common.base.Optional;
 
 import org.opensandiego.webikesd.data.model.CyclePoint;
+import org.opensandiego.webikesd.data.model.Trip;
 import org.opensandiego.webikesd.data.model.TripCyclePoint;
-import org.opensandiego.webikesd.data.model.TripData;
-import org.opensandiego.webikesd.data.source.DataSource;
-import org.opensandiego.webikesd.data.source.Repo;
+import org.opensandiego.webikesd.data.source.annotations.Repo;
+import org.opensandiego.webikesd.data.source.cyclepoint.CyclePointDataSource;
+import org.opensandiego.webikesd.data.source.trip.TripDataSource;
+import org.opensandiego.webikesd.data.source.tripcyclepoint.TripCyclePointDataSource;
 import org.opensandiego.webikesd.util.schedulers.SchedulerProvider;
 
 import java.util.UUID;
@@ -38,11 +40,11 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
   // Data
   @NonNull
-  private final DataSource<TripCyclePoint> mTripCyclePtRepo;
+  private final TripCyclePointDataSource mTripCyclePtRepo;
   @NonNull
-  private final DataSource<TripData> mTripDataRepo;
+  private final TripDataSource mTripDataRepo;
   @NonNull
-  private final DataSource<CyclePoint> mCyclePtRepo;
+  private final CyclePointDataSource mCyclePtRepo;
   @NonNull
   private final SchedulerProvider mSchedulerProvider;
   @NonNull
@@ -50,12 +52,12 @@ class TrackingPresenter implements TrackingContract.Presenter {
   @NonNull
   private final String mTripId;
   @Nullable
-  private TripData mTripData;
+  private Trip mTrip;
 
   @Inject
-  TrackingPresenter(@NonNull @Repo DataSource<TripCyclePoint> tripCyclePtRepo,
-                    @NonNull @Repo DataSource<TripData> tripDataRepo,
-                    @NonNull @Repo DataSource<CyclePoint> cyclePtRepo,
+  TrackingPresenter(@NonNull @Repo TripCyclePointDataSource tripCyclePtRepo,
+                    @NonNull @Repo TripDataSource tripDataRepo,
+                    @NonNull @Repo CyclePointDataSource cyclePtRepo,
                     @NonNull SchedulerProvider schedulerProvider,
                     @NonNull String tripId) {
     mTripCyclePtRepo = tripCyclePtRepo;
@@ -99,8 +101,8 @@ class TrackingPresenter implements TrackingContract.Presenter {
     mCompositeDisposable.add(disposable);
   }
 
-  private void setTripData(@NonNull TripData tripData) {
-    mTripData = tripData;
+  private void setTripData(@NonNull Trip trip) {
+    mTrip = trip;
   }
 
   @Override
@@ -129,10 +131,10 @@ class TrackingPresenter implements TrackingContract.Presenter {
     @Override
     public void startTrip() {
       // create and startTrip a new trip
-      TripData tripData = new TripData(mTripId);
+      Trip trip = new Trip(mTripId);
 
       Disposable disposable = mTripDataRepo
-          .put(tripData)
+          .add(trip)
           .subscribeOn(mSchedulerProvider.io())
           .observeOn(mSchedulerProvider.ui())
           .subscribe(() -> {
@@ -206,8 +208,8 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
       // Update the cycle point and then add the trip <-> point association record
       Disposable disposable = mCyclePtRepo
-          .put(currentPt)
-          .andThen(mTripCyclePtRepo.put(tripCyclePt))
+          .add(currentPt)
+          .andThen(mTripCyclePtRepo.add(tripCyclePt))
           .subscribeOn(mSchedulerProvider.io())
           .observeOn(mSchedulerProvider.io())
           .subscribe();
@@ -278,10 +280,10 @@ class TrackingPresenter implements TrackingContract.Presenter {
     @Override
     public void completeTrip() {
       // complete trip iff there is data to save
-      if (mTripData != null) {
-        mTripData.setEndTime(System.currentTimeMillis());
+      if (mTrip != null) {
+        mTrip.setEndTime(System.currentTimeMillis());
         Disposable disposable = mTripDataRepo
-            .put(mTripData)
+            .add(mTrip)
             .subscribeOn(mSchedulerProvider.io())
             .observeOn(mSchedulerProvider.ui())
             .subscribe(() -> {

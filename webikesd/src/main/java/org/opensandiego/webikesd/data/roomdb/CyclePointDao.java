@@ -15,13 +15,13 @@ import java.util.List;
 import io.reactivex.Flowable;
 
 @Dao
-public interface CyclePointDao {
+public interface CyclePointDao extends BaseDao<CyclePoint> {
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  void put(CyclePoint pt);
+  void insert(CyclePoint pt);
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  void putAll(List<CyclePoint> pts);
+  void insertAll(List<CyclePoint> pts);
 
   @Update(onConflict = OnConflictStrategy.REPLACE)
   void update(CyclePoint pt);
@@ -35,7 +35,6 @@ public interface CyclePointDao {
   @Query("DELETE FROM cycle_pts WHERE uid == :uid")
   void delete(String uid);
 
-  @Query("DELETE FROM trips")
+  @Query("DELETE FROM cycle_pts")
   void deleteAll();
-
 }

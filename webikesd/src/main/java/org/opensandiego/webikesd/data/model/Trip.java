@@ -40,7 +40,7 @@ import android.support.annotation.NonNull;
  * Store a cycle trip's data in the model layer
  */
 @Entity(tableName = "trips")
-public final class TripData implements BaseModel {
+public final class Trip implements BaseModel {
 
   @PrimaryKey
   @NonNull
@@ -97,7 +97,7 @@ public final class TripData implements BaseModel {
   @ColumnInfo(name = "pause_started_at")
   private double pauseStartedAt = 0;
 
-  public TripData(@NonNull String uid) {
+  public Trip(@NonNull String uid) {
     this.uid = uid;
     this.startTime = System.currentTimeMillis();
     this.endTime = System.currentTimeMillis();

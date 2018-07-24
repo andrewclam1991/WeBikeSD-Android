@@ -3,6 +3,10 @@ package org.opensandiego.webikesd.di;
 import android.app.Application;
 
 import org.opensandiego.webikesd.WeBikeSdApplication;
+import org.opensandiego.webikesd.data.roomdb.AppDatabaseModule;
+import org.opensandiego.webikesd.data.source.cyclepoint.CyclePointRepositoryModule;
+import org.opensandiego.webikesd.data.source.trip.TripRepositoryModule;
+import org.opensandiego.webikesd.data.source.tripcyclepoint.TripCyclePointRepositoryModule;
 
 import javax.inject.Singleton;
 
@@ -25,7 +29,10 @@ import dagger.android.support.AndroidSupportInjectionModule;
  */
 @Singleton
 @Component(modules = {
-    // TasksRepositoryModule.class,
+    CyclePointRepositoryModule.class,
+    TripRepositoryModule.class,
+    TripCyclePointRepositoryModule.class,
+    AppDatabaseModule.class,
     ApplicationModule.class,
     ActivityBindingModule.class,
     AndroidSupportInjectionModule.class})

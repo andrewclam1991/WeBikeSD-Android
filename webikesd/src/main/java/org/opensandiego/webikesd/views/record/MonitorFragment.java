@@ -75,6 +75,7 @@ public class MonitorFragment extends DaggerFragment implements TrackingContract.
   @Nullable
   private ServiceConnection mServiceConnection;
 
+  @Inject
   public MonitorFragment() {
     // Required empty public constructor
   }
