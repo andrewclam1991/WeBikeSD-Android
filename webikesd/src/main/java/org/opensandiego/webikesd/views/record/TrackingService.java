@@ -1,15 +1,17 @@
 package org.opensandiego.webikesd.views.record;
 
 import android.Manifest;
-import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -17,15 +19,23 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+import org.opensandiego.webikesd.BuildConfig;
+
 import javax.inject.Inject;
 
+import dagger.android.DaggerService;
+
+import static org.opensandiego.webikesd.views.record.TrackingNotification.TRACKING_NOTIFICATION_ID;
+
 /**
- * Foreground Service
- * Class Responsibilities:
+ * Service Class Responsibilities:
  * - maintain client {@link FusedLocationProviderClient} to tracking device location
  * - delegate saving the location updates to its {@link TrackingContract.Presenter}
  */
-public class TrackingService extends Service implements TrackingContract.Service {
+public class TrackingService extends DaggerService implements TrackingContract.Service {
+
+  // Debug Log tag
+  private static final String LOG_TAG = TrackingService.class.getSimpleName();
 
   @Inject
   TrackingContract.Presenter mPresenter;
@@ -42,6 +52,26 @@ public class TrackingService extends Service implements TrackingContract.Service
   private LocationRequest mLocationRequest;
   private LocationCallback mLocationCallback;
 
+  /**
+   * Helper method to start an instance of this Service
+   *
+   * @param context application context
+   */
+  public static void startTrackingService(@NonNull Context context) {
+    if (BuildConfig.DEBUG) {
+      Log.d(LOG_TAG, "static startTrackingService() called to start background service");
+    }
+
+    Intent intent = new Intent(context, TrackingService.class);
+
+    // Check android version for foreground notification requirement
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      context.startForegroundService(intent);
+    } else {
+      context.startService(intent);
+    }
+  }
+
   @Override
   public void setView(TrackingContract.View view) { mView = view; }
 
@@ -57,6 +87,11 @@ public class TrackingService extends Service implements TrackingContract.Service
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     mPresenter.setView(this);
+    // Check android version for foreground notification requirement
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      startForeground(TRACKING_NOTIFICATION_ID, TrackingNotification.buildTrackingNotification
+          (this));
+    }
     return super.onStartCommand(intent, flags, startId);
   }
 
@@ -70,22 +105,21 @@ public class TrackingService extends Service implements TrackingContract.Service
   public boolean isActive() { return true; }
 
   @Override
-  public void onTripStart() { mPresenter.onTripStart(); }
+  public void startTrip() { mPresenter.startTrip(); }
 
   @Override
-  public void onTripUpdate(double latitude, double longitude) {
-    mPresenter.onTripUpdate(latitude,
-        longitude);
+  public void updateTrip(double latitude, double longitude) {
+    mPresenter.updateTrip(latitude, longitude);
   }
 
   @Override
-  public void onTripPaused() { mPresenter.onTripPaused(); }
+  public void pauseTrip() { mPresenter.pauseTrip(); }
 
   @Override
-  public void onTripCancelled() { mPresenter.onTripCancelled(); }
+  public void cancelTrip() { mPresenter.cancelTrip(); }
 
   @Override
-  public void onTripComplete() { mPresenter.onTripComplete(); }
+  public void completeTrip() { mPresenter.completeTrip(); }
 
   @Nullable
   @Override
@@ -114,7 +148,7 @@ public class TrackingService extends Service implements TrackingContract.Service
           for (Location location : locationResult.getLocations()) {
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
-            onTripUpdate(latitude, longitude);
+            updateTrip(latitude, longitude);
           }
         }
       };

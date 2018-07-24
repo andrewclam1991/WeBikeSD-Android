@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">WeBikeSD</string>
+    <string name="tracking_notification_description">Tracking description</string>
+    <string name="tracking_notification_content">Currently tracking</string>
+    <!-- Tracking Service -->
+
 </resources>

@@ -104,22 +104,22 @@ class TrackingPresenter implements TrackingContract.Presenter {
   }
 
   @Override
-  public void onTripStart() { mCurrentTripState.onTripStart(); }
+  public void startTrip() { mCurrentTripState.startTrip(); }
 
   @Override
-  public void onTripUpdate(double latitude, double longitude) {
-    mCurrentTripState.onTripUpdate
+  public void updateTrip(double latitude, double longitude) {
+    mCurrentTripState.updateTrip
         (latitude, longitude);
   }
 
   @Override
-  public void onTripPaused() { mCurrentTripState.onTripPaused(); }
+  public void pauseTrip() { mCurrentTripState.pauseTrip(); }
 
   @Override
-  public void onTripCancelled() { mCurrentTripState.onTripCancelled(); }
+  public void cancelTrip() { mCurrentTripState.cancelTrip(); }
 
   @Override
-  public void onTripComplete() { mCurrentTripState.onTripComplete(); }
+  public void completeTrip() { mCurrentTripState.completeTrip(); }
 
   /**
    * Concrete internal {@link TrackingContract.TripState} when there is no
@@ -127,8 +127,8 @@ class TrackingPresenter implements TrackingContract.Presenter {
    */
   private class NoTripState implements TrackingContract.TripState {
     @Override
-    public void onTripStart() {
-      // create and onTripStart a new trip
+    public void startTrip() {
+      // create and startTrip a new trip
       TripData tripData = new TripData(mTripId);
 
       Disposable disposable = mTripDataRepo
@@ -146,24 +146,24 @@ class TrackingPresenter implements TrackingContract.Presenter {
     }
 
     @Override
-    public void onTripUpdate(double latitude, double longitude) {
+    public void updateTrip(double latitude, double longitude) {
       // Ignore invalid request, no trip to update
     }
 
     @Override
-    public void onTripPaused() {
+    public void pauseTrip() {
       // Ignore invalid request, no trip to pause
     }
 
     @Override
-    public void onTripCancelled() {
+    public void cancelTrip() {
       if (mService == null || !mService.isActive()) { return; }
       mService.stopLocationUpdates();
       mService.dropService();
     }
 
     @Override
-    public void onTripComplete() {
+    public void completeTrip() {
       if (mService == null || !mService.isActive()) { return; }
       mService.stopLocationUpdates();
       mService.dropService();
@@ -179,12 +179,12 @@ class TrackingPresenter implements TrackingContract.Presenter {
     private CyclePoint mLastKnownCyclePoint;
 
     @Override
-    public void onTripStart() {
+    public void startTrip() {
       // Ignore invalid request, trip already started
     }
 
     @Override
-    public void onTripUpdate(double latitude, double longitude) {
+    public void updateTrip(double latitude, double longitude) {
       // Create pt object from location data
       String id = UUID.randomUUID().toString();
       long timestamp = System.currentTimeMillis();
@@ -217,22 +217,22 @@ class TrackingPresenter implements TrackingContract.Presenter {
     }
 
     @Override
-    public void onTripPaused() {
+    public void pauseTrip() {
       mCurrentTripState = mTripPausedTripState;
       if (mService == null || !mService.isActive()) { return; }
       mService.stopLocationUpdates();
     }
 
     @Override
-    public void onTripCancelled() {
+    public void cancelTrip() {
       mCurrentTripState = mTripPausedTripState;
-      mCurrentTripState.onTripCancelled();
+      mCurrentTripState.cancelTrip();
     }
 
     @Override
-    public void onTripComplete() {
+    public void completeTrip() {
       mCurrentTripState = mTripPausedTripState;
-      mCurrentTripState.onTripComplete();
+      mCurrentTripState.completeTrip();
     }
   }
 
@@ -243,24 +243,24 @@ class TrackingPresenter implements TrackingContract.Presenter {
   private class TripPausedState implements TrackingContract.TripState {
 
     @Override
-    public void onTripStart() {
+    public void startTrip() {
       mCurrentTripState = mTripStartedTripState;
       if (mService == null || !mService.isActive()) { return; }
       mService.startLocationUpdates();
     }
 
     @Override
-    public void onTripUpdate(double latitude, double longitude) {
-      // Ignore invalid request, can't onTripUpdate a paused trip.
+    public void updateTrip(double latitude, double longitude) {
+      // Ignore invalid request, can't updateTrip a paused trip.
     }
 
     @Override
-    public void onTripPaused() {
+    public void pauseTrip() {
       // Ignore invalid request, trip already paused.
     }
 
     @Override
-    public void onTripCancelled() {
+    public void cancelTrip() {
       // cancel trip by deleting from data source
       Disposable disposable = mTripDataRepo
           .delete(mTripId)
@@ -268,7 +268,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
           .observeOn(mSchedulerProvider.ui())
           .subscribe(() -> {
             mCurrentTripState = mNoTripTripState;
-            mCurrentTripState.onTripCancelled();
+            mCurrentTripState.cancelTrip();
           }, Throwable::printStackTrace);
 
       // add to execution queue
@@ -276,7 +276,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
     }
 
     @Override
-    public void onTripComplete() {
+    public void completeTrip() {
       // complete trip iff there is data to save
       if (mTripData != null) {
         mTripData.setEndTime(System.currentTimeMillis());
@@ -286,7 +286,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
             .observeOn(mSchedulerProvider.ui())
             .subscribe(() -> {
               mCurrentTripState = mNoTripTripState;
-              mCurrentTripState.onTripComplete();
+              mCurrentTripState.completeTrip();
             }, Throwable::printStackTrace);
 
         // add to execution queue

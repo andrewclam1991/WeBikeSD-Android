@@ -5,7 +5,7 @@ package org.opensandiego.webikesd.views;
  */
 public interface BasePresenter<V extends BaseView> {
   /**
-   * Sets the {@link BaseView} to onTripStart handling user interaction
+   * Sets the {@link BaseView} to startTrip handling user interaction
    *
    * @param view reference to the {@link BaseView} class
    */

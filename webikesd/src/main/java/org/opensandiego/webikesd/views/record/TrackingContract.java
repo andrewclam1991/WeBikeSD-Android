@@ -38,15 +38,35 @@ interface TrackingContract {
   // ================ End Framework Dependencies ====================== /
 
   interface TripState {
-    void onTripStart();
+    /**
+     * Command to start the trip
+     */
+    void startTrip();
 
-    void onTripUpdate(double latitude, double longitude);
+    /**
+     * Command to update an existing trip
+     *
+     * @param latitude  latitude of the current location
+     * @param longitude longitude of the current location
+     */
+    void updateTrip(double latitude, double longitude);
 
-    void onTripPaused();
+    /**
+     * Command to pause the trip, this state is mutable
+     */
+    void pauseTrip();
 
-    void onTripCancelled();
+    /**
+     * Command to cancel (delete) the trip, this state is consider terminal
+     * for a particular trip.
+     */
+    void cancelTrip();
 
-    void onTripComplete();
+    /**
+     * Command to complete the trip, this state is consider terminal
+     * for a particular trip.
+     */
+    void completeTrip();
   }
 
   /**
