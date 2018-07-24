@@ -86,8 +86,6 @@ public class MonitorFragment extends DaggerFragment implements TrackingContract.
     View rootView = inflater.inflate(R.layout.fragment_monitor, container, false);
     ButterKnife.bind(this, rootView);
 
-    TrackingService.startService(getContext());
-
     mStartTripBtn.setOnClickListener(v -> {
       if (mService != null && mBound) {
         mService.startTrip();
@@ -115,22 +113,33 @@ public class MonitorFragment extends DaggerFragment implements TrackingContract.
     return rootView;
   }
 
-
   @Override
   public void onStart() {
     super.onStart();
-    if (getActivity() == null) { return; }
-    Intent intent = new Intent(getActivity(), TrackingService.class);
-    getActivity().bindService(intent, getServiceConnection(), Context.BIND_AUTO_CREATE);
+    mPresenter.setView(this);
+
+    if (getActivity() != null) {
+      // Bind service
+      Intent intent = new Intent(getActivity(), TrackingService.class);
+      getActivity().bindService(intent, getServiceConnection(), Context.BIND_AUTO_CREATE);
+      // Start the service, if not already started
+      TrackingService.startService(getActivity());
+    }
+
   }
 
   @Override
   public void onStop() {
     super.onStop();
-    if (getActivity() == null) { return; }
+    mPresenter.dropView();
+
+    if (getActivity() != null) {
+      // Unbind service
+      getActivity().unbindService(getServiceConnection());
+    }
+
     if (mService != null && mBound) {
       mService.dropView();
-      getActivity().unbindService(getServiceConnection());
       mBound = false;
     }
   }
