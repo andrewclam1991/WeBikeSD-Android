@@ -16,9 +16,9 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class MonitorModule {
   @FragmentScoped
   @ContributesAndroidInjector
-  abstract MonitorActivity tasksFragment();
+  abstract MonitorFragment monitorFragment();
 
   @ActivityScoped
   @Binds
-  abstract MonitorContract.Presenter taskPresenter(MonitorPresenter presenter);
+  abstract MonitorContract.Presenter monitorPresenter(MonitorPresenter presenter);
 }

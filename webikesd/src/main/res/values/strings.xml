@@ -2,6 +2,10 @@
     <string name="app_name">WeBikeSD</string>
     <string name="tracking_notification_description">Tracking description</string>
     <string name="tracking_notification_content">Currently tracking</string>
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+    <string name="complete">Complete</string>
+    <string name="cancel">Cancel</string>
     <!-- Tracking Service -->
 
 </resources>

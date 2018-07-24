@@ -45,11 +45,17 @@ public class TrackingService extends DaggerService implements TrackingContract.S
   private TrackingContract.View mView;
 
   // Service binder given to client View
+  @NonNull
   private final IBinder mBinder = new ServiceBinder();
 
   // Google Play Service Location Provider
+  @Nullable
   private FusedLocationProviderClient mLocationClient;
+
+  @Nullable
   private LocationRequest mLocationRequest;
+
+  @Nullable
   private LocationCallback mLocationCallback;
 
   /**
@@ -57,9 +63,9 @@ public class TrackingService extends DaggerService implements TrackingContract.S
    *
    * @param context application context
    */
-  public static void startTrackingService(@NonNull Context context) {
+  public static void startService(@NonNull Context context) {
     if (BuildConfig.DEBUG) {
-      Log.d(LOG_TAG, "static startTrackingService() called to start background service");
+      Log.d(LOG_TAG, "static startService() called to start background service");
     }
 
     Intent intent = new Intent(context, TrackingService.class);
@@ -77,12 +83,6 @@ public class TrackingService extends DaggerService implements TrackingContract.S
 
   @Override
   public void dropView() { mView = null; }
-
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    mLocationClient = LocationServices.getFusedLocationProviderClient(this);
-  }
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
@@ -121,13 +121,13 @@ public class TrackingService extends DaggerService implements TrackingContract.S
   @Override
   public void completeTrip() { mPresenter.completeTrip(); }
 
-  @Nullable
+  @NonNull
   @Override
   public IBinder onBind(Intent intent) { return mBinder; }
 
   @NonNull
   @Override
-  public LocationRequest getLocationRequest() {
+  public final LocationRequest getLocationRequest() {
     if (mLocationRequest == null) {
       mLocationRequest = new LocationRequest()
           .setInterval(10000)
@@ -139,7 +139,7 @@ public class TrackingService extends DaggerService implements TrackingContract.S
 
   @NonNull
   @Override
-  public LocationCallback getLocationCallback() {
+  public final LocationCallback getLocationCallback() {
     if (mLocationCallback == null) {
       mLocationCallback = new LocationCallback() {
         @Override
@@ -156,6 +156,14 @@ public class TrackingService extends DaggerService implements TrackingContract.S
     return mLocationCallback;
   }
 
+  @NonNull
+  private FusedLocationProviderClient getLocationProviderClient() {
+    if (mLocationClient == null) {
+      mLocationClient = LocationServices.getFusedLocationProviderClient(this);
+    }
+    return mLocationClient;
+  }
+
 
   @Override
   public void startLocationUpdates() {
@@ -168,16 +176,17 @@ public class TrackingService extends DaggerService implements TrackingContract.S
       }
       return;
     }
-    mLocationClient.requestLocationUpdates(getLocationRequest(), getLocationCallback(), null);
+    getLocationProviderClient().requestLocationUpdates(getLocationRequest(), getLocationCallback
+        (), null);
   }
 
   @Override
   public void stopLocationUpdates() {
-    mLocationClient.removeLocationUpdates(getLocationCallback());
+    getLocationProviderClient().removeLocationUpdates(getLocationCallback());
   }
 
   @Override
-  public void dropService() {
+  public void stopService() {
     stopSelf();
   }
 
@@ -185,7 +194,7 @@ public class TrackingService extends DaggerService implements TrackingContract.S
    * Class used for the client Binder.  Because we know this service always
    * runs in the same process as its clients, we don't need to deal with IPC.
    */
-  public class ServiceBinder extends Binder {
+  public final class ServiceBinder extends Binder {
     TrackingContract.Service getService() { return TrackingService.this; }
   }
 }

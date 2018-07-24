@@ -47,6 +47,7 @@ ext {
     sqlbrite3Version = '3.2.0'
     glideVersion = "4.6.1"
     retrofitVersion = '2.4.0'
+    butterknifeVersion = '8.8.1'
 
     // Test libraries
     robolectricVersion = '3.8'

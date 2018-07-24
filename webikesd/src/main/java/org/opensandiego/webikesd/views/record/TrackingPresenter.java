@@ -159,14 +159,14 @@ class TrackingPresenter implements TrackingContract.Presenter {
     public void cancelTrip() {
       if (mService == null || !mService.isActive()) { return; }
       mService.stopLocationUpdates();
-      mService.dropService();
+      mService.stopService();
     }
 
     @Override
     public void completeTrip() {
       if (mService == null || !mService.isActive()) { return; }
       mService.stopLocationUpdates();
-      mService.dropService();
+      mService.stopService();
     }
   }
 

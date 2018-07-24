@@ -33,6 +33,16 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintLayoutVersion"
     implementation "com.google.guava:guava:$rootProject.guavaVersion"
 
+    // Android architecture lifecycle components dependencies
+    implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
+
+    // Room components dependencies
+    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
+    implementation "android.arch.persistence.room:rxjava2:$rootProject.roomVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
+    androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
+
     // Google play service dependencies
     implementation "com.google.android.gms:play-services-location:$rootProject.googlePlayServiceVersion"
     implementation "com.google.android.gms:play-services-maps:$rootProject.googlePlayServiceVersion"
@@ -46,19 +56,12 @@ dependencies {
     implementation "com.google.dagger:dagger:$rootProject.daggerVersion"
     implementation "com.google.dagger:dagger-android:$rootProject.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
-    implementation 'com.android.support:support-v4:27.1.1'
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
 
-    // Android architecture lifecycle components dependencies
-    implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
-    annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
-
-    // Room components dependencies
-    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
-    implementation "android.arch.persistence.room:rxjava2:$rootProject.roomVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
-    androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
+    // ButterKnife dependencies
+    implementation "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
 
     // Test dependencies
     testImplementation "junit:junit:$rootProject.junitVersion"
