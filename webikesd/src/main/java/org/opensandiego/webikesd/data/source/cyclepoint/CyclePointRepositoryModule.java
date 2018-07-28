@@ -28,13 +28,13 @@ abstract public class CyclePointRepositoryModule {
   @Binds
   @Local
   abstract CyclePointDataSource providesLocalDataSource(@NonNull CyclePointLocalDataSource
-                                                              dataSource);
+                                                            dataSource);
 
   @NonNull
   @Singleton
   @Binds
   @Remote
   abstract CyclePointDataSource providesRemoteDataSource(@NonNull CyclePointLocalDataSource
-                                                               dataSource);
+                                                             dataSource);
 
 }

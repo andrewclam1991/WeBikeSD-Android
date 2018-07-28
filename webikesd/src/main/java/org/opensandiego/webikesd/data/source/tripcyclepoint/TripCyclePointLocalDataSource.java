@@ -18,12 +18,18 @@ package org.opensandiego.webikesd.data.source.tripcyclepoint;
 
 import android.support.annotation.NonNull;
 
+import org.opensandiego.webikesd.data.model.CyclePoint;
 import org.opensandiego.webikesd.data.model.TripCyclePoint;
 import org.opensandiego.webikesd.data.roomdb.TripCyclePointDao;
 import org.opensandiego.webikesd.data.source.LocalDataSource;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
 
 
 /**
@@ -42,4 +48,18 @@ class TripCyclePointLocalDataSource extends LocalDataSource<TripCyclePoint> impl
     this.mTripCyclePointDao = tripCyclePointDao;
   }
 
+  @NonNull
+  @Override
+  public Flowable<List<CyclePoint>> getCyclePtsByTripId(@NonNull String tripId) {
+    return mTripCyclePointDao.getCyclePtsByTripId(tripId);
+  }
+
+  @NonNull
+  @Override
+  public Completable deleteAll(@NonNull String tripId) {
+    return Completable.create(emitter -> {
+      mTripCyclePointDao.deleteAll(tripId);
+      emitter.onComplete();
+    });
+  }
 }
