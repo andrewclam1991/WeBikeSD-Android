@@ -23,22 +23,20 @@ abstract public class TripCyclePointRepositoryModule {
   @Singleton
   @Repo
   abstract TripCyclePointDataSource providesRepository(@NonNull TripCyclePointRepository
-                                                             repository);
+                                                           repository);
 
   @NonNull
   @Singleton
   @Binds
   @Local
-  abstract TripCyclePointDataSource providesLocalDataSource(@NonNull
-                                                                  TripCyclePointLocalDataSource
-                                                                  dataSource);
+  abstract TripCyclePointDataSource providesLocalDataSource(@NonNull TripCyclePointLocalDataSource
+                                                                dataSource);
 
   @NonNull
   @Singleton
   @Binds
   @Remote
-  abstract TripCyclePointDataSource providesRemoteDataSource(@NonNull
-                                                                   TripCyclePointLocalDataSource
-                                                                   dataSource);
+  abstract TripCyclePointDataSource providesRemoteDataSource(@NonNull TripCyclePointLocalDataSource
+                                                                 dataSource);
 
 }
