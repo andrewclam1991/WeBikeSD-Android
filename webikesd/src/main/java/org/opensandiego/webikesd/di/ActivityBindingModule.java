@@ -1,7 +1,7 @@
 package org.opensandiego.webikesd.di;
 
-import org.opensandiego.webikesd.views.record.MonitorActivity;
-import org.opensandiego.webikesd.views.record.MonitorModule;
+import org.opensandiego.webikesd.views.monitor.MonitorActivity;
+import org.opensandiego.webikesd.views.monitor.MonitorModule;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

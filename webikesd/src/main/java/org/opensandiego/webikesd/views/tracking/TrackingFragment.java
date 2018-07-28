@@ -1,4 +1,4 @@
-package org.opensandiego.webikesd.views.record;
+package org.opensandiego.webikesd.views.tracking;
 
 
 import android.Manifest;
@@ -36,20 +36,15 @@ import dagger.android.support.DaggerFragment;
 
 /**
  * A simple {@link Fragment} subclass.
- * <p>
- * This {@link MonitorContract.View} implementation is responsible for
- * 1. Starts and ends a background service for tracking location updates.
- * 2. Delegate user startTrip/pauseTrip/cancelTrip/completeTrip trip requests to a
- * background service.
- * 3. React to service updates (eg. Trip data) and show user trip status.
- * <p>
  * This {@link TrackingContract.View} implementation is responsible for
  * 1. Request necessary user permissions with prompts.
  * 2. Check if location settings satisfies requirements.
+ * 3. Starts and ends a background service for tracking location updates.
+ * 4. Delegate user startTrip/pauseTrip/cancelTrip/completeTrip trip requests to a
+ * background service.
  */
 @ActivityScoped
-public class MonitorFragment extends DaggerFragment implements TrackingContract.View,
-    MonitorContract.View {
+public class TrackingFragment extends DaggerFragment implements TrackingContract.View {
 
   @BindView(R.id.fragment_monitor_start_trip_btn)
   View mStartTripBtn;
@@ -63,9 +58,6 @@ public class MonitorFragment extends DaggerFragment implements TrackingContract.
   @BindView(R.id.fragment_monitor_complete_trip_btn)
   View mCompleteTripBtn;
 
-  @Inject
-  MonitorContract.Presenter mPresenter;
-
   // Details that defines callbacks for service binding, passed to bindService()
   private boolean mBound = false;
 
@@ -76,7 +68,7 @@ public class MonitorFragment extends DaggerFragment implements TrackingContract.
   private ServiceConnection mServiceConnection;
 
   @Inject
-  public MonitorFragment() {
+  public TrackingFragment() {
     // Required empty public constructor
   }
 
@@ -84,7 +76,7 @@ public class MonitorFragment extends DaggerFragment implements TrackingContract.
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    View rootView = inflater.inflate(R.layout.fragment_monitor, container, false);
+    View rootView = inflater.inflate(R.layout.fragment_tracking, container, false);
     ButterKnife.bind(this, rootView);
 
     mStartTripBtn.setOnClickListener(v -> {
@@ -117,8 +109,6 @@ public class MonitorFragment extends DaggerFragment implements TrackingContract.
   @Override
   public void onStart() {
     super.onStart();
-    mPresenter.setView(this);
-
     if (getActivity() != null) {
       // Bind service
       Intent intent = new Intent(getActivity(), TrackingService.class);
@@ -132,8 +122,6 @@ public class MonitorFragment extends DaggerFragment implements TrackingContract.
   @Override
   public void onStop() {
     super.onStop();
-    mPresenter.dropView();
-
     if (getActivity() != null) {
       // Unbind service
       getActivity().unbindService(getServiceConnection());
@@ -157,7 +145,7 @@ public class MonitorFragment extends DaggerFragment implements TrackingContract.
         public void onServiceConnected(ComponentName className, IBinder service) {
           TrackingService.ServiceBinder binder = (TrackingService.ServiceBinder) service;
           mService = binder.getService();
-          mService.setView(MonitorFragment.this);
+          mService.setView(TrackingFragment.this);
           mBound = true;
         }
 
@@ -241,31 +229,6 @@ public class MonitorFragment extends DaggerFragment implements TrackingContract.
         break;
     }
     super.onActivityResult(requestCode, resultCode, data);
-  }
-
-  @Override
-  public void showTripTime(long duration) {
-
-  }
-
-  @Override
-  public void showTripSpeed(double speed) {
-
-  }
-
-  @Override
-  public void showTripDistance(double distance) {
-
-  }
-
-  @Override
-  public void showTripStatus(String status) {
-
-  }
-
-  @Override
-  public void showLocationStatus(String status) {
-
   }
 
   @Override

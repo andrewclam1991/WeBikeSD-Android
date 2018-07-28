@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".views.record.MonitorFragment">
+    tools:context=".views.monitor.MonitorFragment">
 
     <Button
         android:id="@+id/fragment_monitor_start_trip_btn"

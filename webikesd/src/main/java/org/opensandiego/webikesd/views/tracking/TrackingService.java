@@ -1,4 +1,4 @@
-package org.opensandiego.webikesd.views.record;
+package org.opensandiego.webikesd.views.tracking;
 
 import android.Manifest;
 import android.content.Context;
@@ -20,18 +20,21 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
 import org.opensandiego.webikesd.BuildConfig;
+import org.opensandiego.webikesd.di.ServiceScoped;
 
 import javax.inject.Inject;
 
 import dagger.android.DaggerService;
 
-import static org.opensandiego.webikesd.views.record.TrackingNotification.TRACKING_NOTIFICATION_ID;
+import static org.opensandiego.webikesd.views.tracking.TrackingNotification
+    .TRACKING_NOTIFICATION_ID;
 
 /**
  * Service Class Responsibilities:
  * - maintain client {@link FusedLocationProviderClient} to tracking device location
  * - delegate saving the location updates to its {@link TrackingContract.Presenter}
  */
+@ServiceScoped
 public class TrackingService extends DaggerService implements TrackingContract.Service {
 
   // Debug Log tag

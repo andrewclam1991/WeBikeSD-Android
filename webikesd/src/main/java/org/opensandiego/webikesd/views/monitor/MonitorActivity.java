@@ -1,4 +1,4 @@
-package org.opensandiego.webikesd.views.record;
+package org.opensandiego.webikesd.views.monitor;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
