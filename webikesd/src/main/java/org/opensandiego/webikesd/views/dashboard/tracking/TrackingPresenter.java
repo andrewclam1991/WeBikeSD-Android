@@ -275,18 +275,22 @@ class TrackingPresenter implements TrackingContract.Presenter {
       Timber.d("cancelTrip(), handle deleting instance trip and stop service upon complete.");
 
       // cancel trip by deleting from data source
-      Disposable disposable = mTripDataRepo
-          .delete(mTripId)
-          .subscribeOn(mSchedulerProvider.io())
-          .observeOn(mSchedulerProvider.ui())
-          .subscribe(() -> {
-            if (mService == null || !mService.isActive()) { return; }
-            mService.stopService();
-            mCurrentTripState = mNoTripTripState;
-          }, Throwable::printStackTrace);
+      if (!Strings.isNullOrEmpty(mTripId)) {
+        Disposable disposable = mTripDataRepo
+            .delete(mTripId)
+            .subscribeOn(mSchedulerProvider.io())
+            .observeOn(mSchedulerProvider.ui())
+            .subscribe(() -> {
+              if (mService == null || !mService.isActive()) { return; }
+              mService.stopService();
+              mCurrentTripState = mNoTripTripState;
+            }, Throwable::printStackTrace);
 
-      // add to execution queue
-      mCompositeDisposable.add(disposable);
+        // add to execution queue
+        mCompositeDisposable.add(disposable);
+      } else {
+        Timber.w("Unable to cancel trip, no instance tripId token");
+      }
     }
 
     @Override
