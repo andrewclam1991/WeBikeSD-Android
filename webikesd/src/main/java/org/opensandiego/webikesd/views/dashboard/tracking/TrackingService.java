@@ -26,9 +26,11 @@ import static org.opensandiego.webikesd.views.dashboard.tracking.TrackingNotific
     .TRACKING_NOTIFICATION_ID;
 
 /**
- * Service Class Responsibilities:
- * - maintain client {@link FusedLocationProviderClient} to tracking device location
- * - delegate saving the location updates to its {@link TrackingContract.Presenter}
+ * Implementation of framework {@link DaggerService} class
+ * {@link TrackingService} Responsibilities:
+ * - maintains a client {@link FusedLocationProviderClient} to tracking device location.
+ * - delegates saving the trip updates to its {@link TrackingContract.Presenter}.
+ * - keep itself alive until user explicitly stops the trip.
  */
 public class TrackingService extends DaggerService implements TrackingContract.Service {
 
