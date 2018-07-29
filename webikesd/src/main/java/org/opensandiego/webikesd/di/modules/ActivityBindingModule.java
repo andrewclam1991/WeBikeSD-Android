@@ -1,8 +1,13 @@
-package org.opensandiego.webikesd.di;
+package org.opensandiego.webikesd.di.modules;
 
+import android.support.annotation.NonNull;
+
+import org.opensandiego.webikesd.di.ActivityScoped;
+import org.opensandiego.webikesd.di.ServiceScoped;
 import org.opensandiego.webikesd.views.dashboard.DashboardActivity;
 import org.opensandiego.webikesd.views.dashboard.monitor.MonitorModule;
 import org.opensandiego.webikesd.views.dashboard.tracking.TrackingModule;
+import org.opensandiego.webikesd.views.dashboard.tracking.TrackingService;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -22,4 +27,9 @@ public abstract class ActivityBindingModule {
   @ActivityScoped
   @ContributesAndroidInjector(modules = {MonitorModule.class, TrackingModule.class})
   abstract DashboardActivity dashboardActivity();
+
+  @NonNull
+  @ServiceScoped
+  @ContributesAndroidInjector(modules = {TrackingModule.class})
+  abstract TrackingService trackingService();
 }

@@ -6,6 +6,7 @@ android {
         applicationId "org.opensandiego.webikesd"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
+        multiDexEnabled true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -27,10 +28,12 @@ dependencies {
 
     // Android framework and support dependencies
     implementation "com.android.support:appcompat-v7:$rootProject.androidSupportVersion"
+    implementation "com.android.support:design:$rootProject.androidSupportVersion"
     implementation "com.android.support:support-v4:$rootProject.androidSupportVersion"
     implementation "com.android.support:recyclerview-v7:$rootProject.androidSupportVersion"
     implementation "com.android.support:cardview-v7:$rootProject.androidSupportVersion"
     implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintLayoutVersion"
+    implementation 'com.android.support:multidex:1.0.3'
     implementation "com.google.guava:guava:$rootProject.guavaVersion"
 
     // Android architecture lifecycle components dependencies

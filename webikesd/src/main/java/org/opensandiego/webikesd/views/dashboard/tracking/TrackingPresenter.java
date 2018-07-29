@@ -9,7 +9,7 @@ import org.opensandiego.webikesd.data.source.annotations.Repo;
 import org.opensandiego.webikesd.data.source.cyclepoint.CyclePointDataSource;
 import org.opensandiego.webikesd.data.source.trip.TripDataSource;
 import org.opensandiego.webikesd.data.source.tripcyclepoint.TripCyclePointDataSource;
-import org.opensandiego.webikesd.util.schedulers.SchedulerProvider;
+import org.opensandiego.webikesd.util.schedulers.BaseSchedulerProvider;
 
 import java.util.UUID;
 
@@ -46,7 +46,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
   @NonNull
   private final CyclePointDataSource mCyclePtRepo;
   @NonNull
-  private final SchedulerProvider mSchedulerProvider;
+  private final BaseSchedulerProvider mSchedulerProvider;
   @NonNull
   private final CompositeDisposable mCompositeDisposable;
   @NonNull
@@ -58,14 +58,13 @@ class TrackingPresenter implements TrackingContract.Presenter {
   TrackingPresenter(@NonNull @Repo TripCyclePointDataSource tripCyclePtRepo,
                     @NonNull @Repo TripDataSource tripDataRepo,
                     @NonNull @Repo CyclePointDataSource cyclePtRepo,
-                    @NonNull SchedulerProvider schedulerProvider,
-                    @NonNull String tripId) {
+                    @NonNull BaseSchedulerProvider schedulerProvider) {
     mTripCyclePtRepo = tripCyclePtRepo;
     mTripDataRepo = tripDataRepo;
     mCyclePtRepo = cyclePtRepo;
     mSchedulerProvider = schedulerProvider;
     mCompositeDisposable = new CompositeDisposable();
-    mTripId = tripId;
+    mTripId = UUID.randomUUID().toString();
 
     // Setup internal states
     mNoTripTripState = new NoTripState();

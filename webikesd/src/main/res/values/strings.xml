@@ -14,6 +14,7 @@
     <string name="monitor_trip_distance_title">Distance:</string>
     <string name="monitor_trip_status_title">Status:</string>
     <string name="monitor_trip_location_status_title">Location Status:</string>
+    <string name="title_activity_dashboard">Dashboard</string>
 
     <!-- Tracking Service -->
 

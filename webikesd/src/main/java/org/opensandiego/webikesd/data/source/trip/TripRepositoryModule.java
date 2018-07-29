@@ -17,9 +17,9 @@ import dagger.Module;
 @Module
 abstract public class TripRepositoryModule {
 
-  @Binds
   @NonNull
   @Singleton
+  @Binds
   @Repo
   abstract TripDataSource providesRepository(@NonNull TripRepository repository);
 

@@ -1,6 +1,8 @@
 package org.opensandiego.webikesd.views.dashboard.tracking;
 
 
+import android.support.annotation.NonNull;
+
 import org.opensandiego.webikesd.di.FragmentScoped;
 import org.opensandiego.webikesd.di.ServiceScoped;
 import org.opensandiego.webikesd.views.dashboard.monitor.MonitorPresenter;
@@ -19,7 +21,17 @@ public abstract class TrackingModule {
   @ContributesAndroidInjector
   abstract TrackingFragment trackingFragment();
 
+  @NonNull
   @ServiceScoped
   @Binds
   abstract TrackingContract.Presenter trackingPresenter(TrackingPresenter presenter);
+
+//  @NonNull
+//  @ServiceScoped
+//  @Provides
+//  @TripId
+//  static String provideTripId() {
+//    return UUID.randomUUID().toString();
+//  }
+
 }
