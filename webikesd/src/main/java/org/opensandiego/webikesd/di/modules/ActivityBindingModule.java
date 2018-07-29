@@ -24,6 +24,7 @@ import dagger.android.ContributesAndroidInjector;
  */
 @Module
 public abstract class ActivityBindingModule {
+  @NonNull
   @ActivityScoped
   @ContributesAndroidInjector(modules = {MonitorModule.class, TrackingModule.class})
   abstract DashboardActivity dashboardActivity();

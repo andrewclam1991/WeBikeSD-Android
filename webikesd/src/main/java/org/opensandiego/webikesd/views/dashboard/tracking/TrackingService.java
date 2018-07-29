@@ -34,9 +34,6 @@ import static org.opensandiego.webikesd.views.dashboard.tracking.TrackingNotific
  */
 public class TrackingService extends DaggerService implements TrackingContract.Service {
 
-  // Debug Log tag
-  private static final String LOG_TAG = TrackingService.class.getSimpleName();
-
   @Inject
   TrackingContract.Presenter mPresenter;
 
@@ -110,6 +107,14 @@ public class TrackingService extends DaggerService implements TrackingContract.S
   public boolean onUnbind(Intent intent) {
     Timber.d("Service onUnbind() called, cleanup resources");
     return super.onUnbind(intent);
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    mLocationClient = null;
+    mLocationCallback = null;
+    mLocationRequest = null;
   }
 
   @Override
