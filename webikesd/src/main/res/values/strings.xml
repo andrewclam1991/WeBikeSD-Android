@@ -6,6 +6,15 @@
     <string name="pause">Pause</string>
     <string name="complete">Complete</string>
     <string name="cancel">Cancel</string>
+
+    <!-- Monitor Fragment -->
+    <string name="monitor_trip_field_value_default">n/a</string>
+    <string name="monitor_trip_time_title">Total Time:</string>
+    <string name="monitor_trip_speed_title">Speed:</string>
+    <string name="monitor_trip_distance_title">Distance:</string>
+    <string name="monitor_trip_status_title">Status:</string>
+    <string name="monitor_trip_location_status_title">Location Status:</string>
+
     <!-- Tracking Service -->
 
 </resources>

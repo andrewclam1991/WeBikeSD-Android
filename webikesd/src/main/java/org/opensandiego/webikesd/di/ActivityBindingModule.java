@@ -1,7 +1,8 @@
 package org.opensandiego.webikesd.di;
 
-import org.opensandiego.webikesd.views.monitor.MonitorActivity;
-import org.opensandiego.webikesd.views.monitor.MonitorModule;
+import org.opensandiego.webikesd.views.dashboard.DashboardActivity;
+import org.opensandiego.webikesd.views.dashboard.monitor.MonitorModule;
+import org.opensandiego.webikesd.views.dashboard.tracking.TrackingModule;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -19,6 +20,6 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class ActivityBindingModule {
   @ActivityScoped
-  @ContributesAndroidInjector(modules = MonitorModule.class)
-  abstract MonitorActivity monitorActivity();
+  @ContributesAndroidInjector(modules = {MonitorModule.class, TrackingModule.class})
+  abstract DashboardActivity dashboardActivity();
 }

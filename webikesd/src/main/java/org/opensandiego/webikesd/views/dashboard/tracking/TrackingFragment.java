@@ -1,4 +1,4 @@
-package org.opensandiego.webikesd.views.tracking;
+package org.opensandiego.webikesd.views.dashboard.tracking;
 
 
 import android.Manifest;
@@ -46,16 +46,16 @@ import dagger.android.support.DaggerFragment;
 @ActivityScoped
 public class TrackingFragment extends DaggerFragment implements TrackingContract.View {
 
-  @BindView(R.id.fragment_monitor_start_trip_btn)
+  @BindView(R.id.fragment_tracking_start_trip_btn)
   View mStartTripBtn;
 
-  @BindView(R.id.fragment_monitor_pause_trip_btn)
+  @BindView(R.id.fragment_tracking_pause_trip_btn)
   View mPauseTripBtn;
 
-  @BindView(R.id.fragment_monitor_cancel_trip_btn)
+  @BindView(R.id.fragment_tracking_cancel_trip_btn)
   View mCancelTripBtn;
 
-  @BindView(R.id.fragment_monitor_complete_trip_btn)
+  @BindView(R.id.fragment_tracking_complete_trip_btn)
   View mCompleteTripBtn;
 
   // Details that defines callbacks for service binding, passed to bindService()

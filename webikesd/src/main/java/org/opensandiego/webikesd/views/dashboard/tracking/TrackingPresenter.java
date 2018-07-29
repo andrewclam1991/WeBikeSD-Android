@@ -1,4 +1,4 @@
-package org.opensandiego.webikesd.views.tracking;
+package org.opensandiego.webikesd.views.dashboard.tracking;
 
 import com.google.common.base.Optional;
 

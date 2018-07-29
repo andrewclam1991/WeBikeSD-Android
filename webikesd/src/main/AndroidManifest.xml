@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name="org.opensandiego.webikesd.views.monitor.MonitorActivity">
+        <activity android:name="org.opensandiego.webikesd.views.dashboard.DashboardActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="org.opensandiego.webikesd.views.tracking.TrackingService">
+        <service android:name=".views.dashboard.tracking.TrackingService">
 
         </service>
 

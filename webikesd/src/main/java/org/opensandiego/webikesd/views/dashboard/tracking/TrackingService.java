@@ -1,4 +1,4 @@
-package org.opensandiego.webikesd.views.tracking;
+package org.opensandiego.webikesd.views.dashboard.tracking;
 
 import android.Manifest;
 import android.content.Context;
@@ -26,7 +26,7 @@ import javax.inject.Inject;
 
 import dagger.android.DaggerService;
 
-import static org.opensandiego.webikesd.views.tracking.TrackingNotification
+import static org.opensandiego.webikesd.views.dashboard.tracking.TrackingNotification
     .TRACKING_NOTIFICATION_ID;
 
 /**

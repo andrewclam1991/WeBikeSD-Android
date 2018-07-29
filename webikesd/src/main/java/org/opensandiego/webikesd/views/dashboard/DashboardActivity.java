@@ -1,4 +1,4 @@
-package org.opensandiego.webikesd.views.monitor;
+package org.opensandiego.webikesd.views.dashboard;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import org.opensandiego.webikesd.R;
 import org.opensandiego.webikesd.util.ActivityUtils;
 import org.opensandiego.webikesd.util.idlingresource.EspressoIdlingResource;
+import org.opensandiego.webikesd.views.dashboard.monitor.MonitorFragment;
+import org.opensandiego.webikesd.views.dashboard.tracking.TrackingFragment;
 
 import javax.inject.Inject;
 
@@ -17,19 +19,23 @@ import dagger.Lazy;
 import dagger.android.support.DaggerAppCompatActivity;
 
 /**
- * Lean framework activity
+ * Dash board activity
  * Responsibilities:
- * 1. load and keep framework fragment alive as long as activity is active
+ * - show user current trip metrics
+ * - let user control the state of the current trip
  */
-public class MonitorActivity extends DaggerAppCompatActivity {
+public class DashboardActivity extends DaggerAppCompatActivity {
 
   @Inject
-  Lazy<MonitorFragment> mFragmentProvider;
+  Lazy<MonitorFragment> mMonitorFragmentProvider;
+
+  @Inject
+  Lazy<TrackingFragment> mTrackingFragmentProvider;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_record);
+    setContentView(R.layout.activity_dashboard);
     Toolbar toolbar = findViewById(R.id.toolbar);
 
     setSupportActionBar(toolbar);
@@ -39,14 +45,31 @@ public class MonitorActivity extends DaggerAppCompatActivity {
     actionBar.setDisplayHomeAsUpEnabled(true);
     actionBar.setDisplayShowHomeEnabled(true);
 
+    setupMonitorFragment();
+    setupTrackingFragment();
+  }
+
+  private void setupMonitorFragment() {
     MonitorFragment fragment = (MonitorFragment) getSupportFragmentManager()
-        .findFragmentById(R.id.fragment_container);
+        .findFragmentById(R.id.fragment_container_top);
 
     if (fragment == null) {
       // Create the fragment
-      fragment = mFragmentProvider.get();
+      fragment = mMonitorFragmentProvider.get();
       ActivityUtils.addFragmentToActivity(
-          getSupportFragmentManager(), fragment, R.id.fragment_container);
+          getSupportFragmentManager(), fragment, R.id.fragment_container_top);
+    }
+  }
+
+  private void setupTrackingFragment() {
+    TrackingFragment fragment = (TrackingFragment) getSupportFragmentManager()
+        .findFragmentById(R.id.fragment_container_bottom);
+
+    if (fragment == null) {
+      // Create the fragment
+      fragment = mTrackingFragmentProvider.get();
+      ActivityUtils.addFragmentToActivity(
+          getSupportFragmentManager(), fragment, R.id.fragment_container_bottom);
     }
   }
 

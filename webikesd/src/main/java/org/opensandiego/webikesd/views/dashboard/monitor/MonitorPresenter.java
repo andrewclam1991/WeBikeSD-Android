@@ -1,4 +1,4 @@
-package org.opensandiego.webikesd.views.monitor;
+package org.opensandiego.webikesd.views.dashboard.monitor;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;

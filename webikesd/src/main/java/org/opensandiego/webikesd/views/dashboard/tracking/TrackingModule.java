@@ -1,9 +1,9 @@
-package org.opensandiego.webikesd.views.tracking;
+package org.opensandiego.webikesd.views.dashboard.tracking;
 
 
 import org.opensandiego.webikesd.di.FragmentScoped;
 import org.opensandiego.webikesd.di.ServiceScoped;
-import org.opensandiego.webikesd.views.monitor.MonitorPresenter;
+import org.opensandiego.webikesd.views.dashboard.monitor.MonitorPresenter;
 
 import dagger.Binds;
 import dagger.Module;
