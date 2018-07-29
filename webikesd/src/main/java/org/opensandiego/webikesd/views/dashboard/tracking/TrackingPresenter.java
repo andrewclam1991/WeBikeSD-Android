@@ -20,6 +20,7 @@ import javax.inject.Singleton;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 @Singleton
 class TrackingPresenter implements TrackingContract.Presenter {
@@ -128,17 +129,21 @@ class TrackingPresenter implements TrackingContract.Presenter {
   private class NoTripState implements TrackingContract.TripState {
     @Override
     public void startTrip() {
+      Timber.d("startTrip() called, handle starting a new trip.");
+      Timber.d("new trip id: %s", mTripId);
+
       // create and startTrip a new trip
-      Trip trip = new Trip(mTripId);
+      mTrip = new Trip(mTripId);
 
       Disposable disposable = mTripDataRepo
-          .add(trip)
+          .add(mTrip)
           .subscribeOn(mSchedulerProvider.io())
           .observeOn(mSchedulerProvider.ui())
           .subscribe(() -> {
             mCurrentTripState = mTripStartedTripState;
             if (mService == null || !mService.isActive()) { return; }
             mService.startLocationUpdates();
+            Timber.d("new trip with id %s started successfully.", mTripId);
           }, Throwable::printStackTrace);
 
       // add to execution queue
@@ -147,22 +152,22 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void updateTrip(double latitude, double longitude) {
-      // Ignore invalid request, no trip to update
+      Timber.d("updateTrip() called, invalid request, no trip to update.");
     }
 
     @Override
     public void pauseTrip() {
-      // Ignore invalid request, no trip to pause
+      Timber.d("pauseTrip() called, invalid request, no trip to pause.");
     }
 
     @Override
     public void cancelTrip() {
-      // Ignore invalid request, no trip to cancel
+      Timber.d("cancelTrip() called, invalid request, no trip to cancel.");
     }
 
     @Override
     public void completeTrip() {
-      // Ignore invalid request, no trip to complete
+      Timber.d("completeTrip() called, invalid request, no trip to complete.");
     }
   }
 
@@ -176,11 +181,13 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void startTrip() {
-      // Ignore invalid request, trip already started
+      Timber.d("startTrip() called, invalid request, trip already started.");
     }
 
     @Override
     public void updateTrip(double latitude, double longitude) {
+      Timber.d("updateTrip() called, handle update.");
+
       // Create pt object from location data
       String id = UUID.randomUUID().toString();
       long timestamp = System.currentTimeMillis();
@@ -215,6 +222,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void pauseTrip() {
+      Timber.d("pauseTrip() called, change to paused state.");
       mCurrentTripState = mTripPausedTripState;
       if (mService == null || !mService.isActive()) { return; }
       mService.stopLocationUpdates();
@@ -222,12 +230,15 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void cancelTrip() {
+      Timber.d("cancelTrip() called, change to paused state, delegate pause trip to new state.");
       mCurrentTripState = mTripPausedTripState;
       mCurrentTripState.cancelTrip();
     }
 
     @Override
     public void completeTrip() {
+      Timber.d("completeTrip() called, change to paused state, delegate complete trip to new " +
+          "state.");
       mCurrentTripState = mTripPausedTripState;
       mCurrentTripState.completeTrip();
     }
@@ -241,6 +252,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void startTrip() {
+      Timber.d("startTrip() called, handle restarting a paused trip.");
       mCurrentTripState = mTripStartedTripState;
       if (mService == null || !mService.isActive()) { return; }
       mService.startLocationUpdates();
@@ -248,16 +260,19 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void updateTrip(double latitude, double longitude) {
-      // Ignore invalid request, can't update a paused trip.
+      Timber.d("updateTrip() called, invalid request, can't update a paused trip.");
     }
 
     @Override
     public void pauseTrip() {
-      // Ignore invalid request, trip already paused.
+      Timber.d("pauseTrip() called, invalid request, trip already paused.");
     }
 
     @Override
     public void cancelTrip() {
+      Timber.d("cancelTrip() called, handle deleting instance trip and stop service upon complete" +
+          ".");
+
       // cancel trip by deleting from data source
       Disposable disposable = mTripDataRepo
           .delete(mTripId)
@@ -275,8 +290,12 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void completeTrip() {
+      Timber.d("completeTrip() called, handle persisting instance trip and stop service upon complete.");
+
       // complete trip iff there is data to save
       if (mTrip != null) {
+        Timber.d("has trip data to save, save trip id: %s", mTripId);
+
         mTrip.setEndTime(System.currentTimeMillis());
         Disposable disposable = mTripDataRepo
             .add(mTrip)
@@ -292,6 +311,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
         mCompositeDisposable.add(disposable);
       } else {
         // just stop the service
+        Timber.d("no trip data to save.");
         if (mService == null || !mService.isActive()) { return; }
         mService.stopService();
         mCurrentTripState = mNoTripTripState;
