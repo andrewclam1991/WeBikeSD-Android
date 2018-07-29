@@ -4,7 +4,6 @@ package org.opensandiego.webikesd.views.dashboard.tracking;
 import android.support.annotation.NonNull;
 
 import org.opensandiego.webikesd.di.FragmentScoped;
-import org.opensandiego.webikesd.di.ServiceScoped;
 import org.opensandiego.webikesd.views.dashboard.monitor.MonitorPresenter;
 
 import dagger.Binds;
@@ -22,7 +21,6 @@ public abstract class TrackingModule {
   abstract TrackingFragment trackingFragment();
 
   @NonNull
-  @ServiceScoped
   @Binds
   abstract TrackingContract.Presenter trackingPresenter(TrackingPresenter presenter);
 

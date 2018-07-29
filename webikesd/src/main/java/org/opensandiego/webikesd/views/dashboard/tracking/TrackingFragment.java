@@ -24,6 +24,7 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
 
+import org.opensandiego.webikesd.BuildConfig;
 import org.opensandiego.webikesd.R;
 import org.opensandiego.webikesd.di.ActivityScoped;
 
@@ -33,6 +34,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.support.DaggerFragment;
+import timber.log.Timber;
 
 
 /**
@@ -110,27 +112,33 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
   @Override
   public void onStart() {
     super.onStart();
+    Timber.d("View onStart(), prepare to bind View to TrackingService...");
     FragmentActivity parentActivity = getActivity();
     if (parentActivity != null) {
       // Bind service
       Intent intent = new Intent(parentActivity, TrackingService.class);
       parentActivity.bindService(intent, getServiceConnection(), Context.BIND_AUTO_CREATE);
+      if (BuildConfig.DEBUG) {
+        Timber.d("Called parent activity to bind View to TrackingService...");
+      }
     }
-
   }
 
   @Override
   public void onStop() {
     super.onStop();
+    Timber.d("View onStop(), prepare to unbind View from TrackingService...");
+
+    if (mService != null && mService.isActive()) {
+      mService.dropView();
+      Timber.d("Service is active, called to drop View.");
+    }
+
     FragmentActivity parentActivity = getActivity();
     if (parentActivity != null) {
       // Unbind service
       parentActivity.unbindService(getServiceConnection());
-    }
-
-    if (mService != null && mBound) {
-      mService.dropView();
-      mBound = false;
+      Timber.d("Called parent activity to unbind View from TrackingService...");
     }
   }
 
@@ -139,6 +147,7 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
    *
    * @return instance of a {@link ServiceConnection} callback
    */
+  @NonNull
   private ServiceConnection getServiceConnection() {
     if (mServiceConnection == null) {
       mServiceConnection = new ServiceConnection() {
@@ -148,10 +157,14 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
           mService = binder.getService();
           mService.setView(TrackingFragment.this);
           mBound = true;
+          Timber.d("View bound to TrackingService.");
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName arg0) { mBound = false; }
+        public void onServiceDisconnected(ComponentName arg0) {
+          mBound = false;
+          Timber.d("View is unbound from TrackingService.");
+        }
       };
     }
     return mServiceConnection;

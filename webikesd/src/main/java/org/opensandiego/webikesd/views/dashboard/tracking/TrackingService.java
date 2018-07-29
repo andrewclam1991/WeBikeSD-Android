@@ -10,7 +10,6 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -18,12 +17,10 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
-import org.opensandiego.webikesd.BuildConfig;
-import org.opensandiego.webikesd.di.ServiceScoped;
-
 import javax.inject.Inject;
 
 import dagger.android.DaggerService;
+import timber.log.Timber;
 
 import static org.opensandiego.webikesd.views.dashboard.tracking.TrackingNotification
     .TRACKING_NOTIFICATION_ID;
@@ -33,7 +30,6 @@ import static org.opensandiego.webikesd.views.dashboard.tracking.TrackingNotific
  * - maintain client {@link FusedLocationProviderClient} to tracking device location
  * - delegate saving the location updates to its {@link TrackingContract.Presenter}
  */
-@ServiceScoped
 public class TrackingService extends DaggerService implements TrackingContract.Service {
 
   // Debug Log tag
@@ -65,9 +61,7 @@ public class TrackingService extends DaggerService implements TrackingContract.S
    */
   @Override
   public void startService() {
-    if (BuildConfig.DEBUG) {
-      Log.d(LOG_TAG, "startSelf() called to start background service");
-    }
+    Timber.d("startService() called to start foreground service");
 
     Intent intent = new Intent(getApplicationContext(), TrackingService.class);
     // Check android version for foreground notification requirement
@@ -79,24 +73,40 @@ public class TrackingService extends DaggerService implements TrackingContract.S
   }
 
   @Override
-  public void setView(TrackingContract.View view) { mView = view; }
+  public void setView(TrackingContract.View view) {
+    Timber.d("Service setView() called to bind View");
+    mView = view;
+  }
 
   @Override
-  public void dropView() { mView = null; }
+  public void dropView() {
+    Timber.d("Service dropView() called to unbind View");
+    mView = null;
+  }
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    mPresenter.setView(this);
+    Timber.d("Service onStartCommand() called, service started");
+
     // Check android version for foreground notification requirement
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      Timber.d("> Android O, post foreground notification to keep service alive.");
       startForeground(TRACKING_NOTIFICATION_ID, TrackingNotification.build(this));
     }
     return super.onStartCommand(intent, flags, startId);
   }
 
+  @NonNull
+  @Override
+  public IBinder onBind(Intent intent) {
+    Timber.d("Service onBind() called, returns an instance of IBinder to caller");
+    mPresenter.setView(this);
+    return mBinder;
+  }
+
   @Override
   public boolean onUnbind(Intent intent) {
-    mPresenter.dropView();
+    Timber.d("Service onUnbind() called, cleanup resources");
     return super.onUnbind(intent);
   }
 
@@ -104,7 +114,10 @@ public class TrackingService extends DaggerService implements TrackingContract.S
   public boolean isActive() { return true; }
 
   @Override
-  public void startTrip() { mPresenter.startTrip(); }
+  public void startTrip() {
+    startService();
+    mPresenter.startTrip();
+  }
 
   @Override
   public void updateTrip(double latitude, double longitude) {
@@ -119,13 +132,6 @@ public class TrackingService extends DaggerService implements TrackingContract.S
 
   @Override
   public void completeTrip() { mPresenter.completeTrip(); }
-
-  @NonNull
-  @Override
-  public IBinder onBind(Intent intent) {
-    mPresenter.setView(this);
-    return mBinder;
-  }
 
   @NonNull
   @Override

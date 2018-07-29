@@ -128,9 +128,6 @@ class TrackingPresenter implements TrackingContract.Presenter {
   private class NoTripState implements TrackingContract.TripState {
     @Override
     public void startTrip() {
-
-      mService.startService();
-
       // create and startTrip a new trip
       Trip trip = new Trip(mTripId);
 
