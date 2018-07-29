@@ -25,6 +25,8 @@ interface TrackingContract {
 
     void stopLocationUpdates();
 
+    void startService();
+
     void stopService();
 
     @NonNull

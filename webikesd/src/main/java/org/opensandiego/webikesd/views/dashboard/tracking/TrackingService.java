@@ -1,7 +1,6 @@
 package org.opensandiego.webikesd.views.dashboard.tracking;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -63,21 +62,19 @@ public class TrackingService extends DaggerService implements TrackingContract.S
 
   /**
    * Helper method to start an instance of this Service
-   *
-   * @param context application context
    */
-  public static void startService(@NonNull Context context) {
+  @Override
+  public void startService() {
     if (BuildConfig.DEBUG) {
-      Log.d(LOG_TAG, "static startService() called to start background service");
+      Log.d(LOG_TAG, "startSelf() called to start background service");
     }
 
-    Intent intent = new Intent(context, TrackingService.class);
-
+    Intent intent = new Intent(getApplicationContext(), TrackingService.class);
     // Check android version for foreground notification requirement
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      context.startForegroundService(intent);
+      startForegroundService(intent);
     } else {
-      context.startService(intent);
+      startService(intent);
     }
   }
 
@@ -92,8 +89,7 @@ public class TrackingService extends DaggerService implements TrackingContract.S
     mPresenter.setView(this);
     // Check android version for foreground notification requirement
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      startForeground(TRACKING_NOTIFICATION_ID, TrackingNotification.buildTrackingNotification
-          (this));
+      startForeground(TRACKING_NOTIFICATION_ID, TrackingNotification.build(this));
     }
     return super.onStartCommand(intent, flags, startId);
   }
@@ -126,7 +122,10 @@ public class TrackingService extends DaggerService implements TrackingContract.S
 
   @NonNull
   @Override
-  public IBinder onBind(Intent intent) { return mBinder; }
+  public IBinder onBind(Intent intent) {
+    mPresenter.setView(this);
+    return mBinder;
+  }
 
   @NonNull
   @Override
@@ -190,6 +189,7 @@ public class TrackingService extends DaggerService implements TrackingContract.S
 
   @Override
   public void stopService() {
+    stopForeground(true);
     stopSelf();
   }
 

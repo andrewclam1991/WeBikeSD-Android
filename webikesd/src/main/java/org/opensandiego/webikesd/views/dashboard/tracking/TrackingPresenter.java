@@ -109,8 +109,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
   @Override
   public void updateTrip(double latitude, double longitude) {
-    mCurrentTripState.updateTrip
-        (latitude, longitude);
+    mCurrentTripState.updateTrip(latitude, longitude);
   }
 
   @Override
@@ -129,6 +128,9 @@ class TrackingPresenter implements TrackingContract.Presenter {
   private class NoTripState implements TrackingContract.TripState {
     @Override
     public void startTrip() {
+
+      mService.startService();
+
       // create and startTrip a new trip
       Trip trip = new Trip(mTripId);
 
@@ -158,16 +160,12 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void cancelTrip() {
-      if (mService == null || !mService.isActive()) { return; }
-      mService.stopLocationUpdates();
-      mService.stopService();
+      // Ignore invalid request, no trip to cancel
     }
 
     @Override
     public void completeTrip() {
-      if (mService == null || !mService.isActive()) { return; }
-      mService.stopLocationUpdates();
-      mService.stopService();
+      // Ignore invalid request, no trip to complete
     }
   }
 
@@ -193,7 +191,6 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
       if (mLastKnownCyclePoint == null) {
         // first pt, no speed
-        mLastKnownCyclePoint = currentPt;
         currentPt.setSpeed(0);
       } else {
         // TODO calculate speed base on distance and time elapsed
@@ -201,13 +198,15 @@ class TrackingPresenter implements TrackingContract.Presenter {
         currentPt.setSpeed(10);
       }
 
+      // update last known cycle point with current
+      mLastKnownCyclePoint = currentPt;
+
       // Create trip <-> association record
       String tripCyclePtUid = UUID.randomUUID().toString();
       TripCyclePoint tripCyclePt = new TripCyclePoint(tripCyclePtUid, mTripId, currentPt.getUid());
 
       // Update the cycle point and then add the trip <-> point association record
-      Disposable disposable = mCyclePtRepo
-          .add(currentPt)
+      Disposable disposable = mCyclePtRepo.add(mLastKnownCyclePoint)
           .andThen(mTripCyclePtRepo.add(tripCyclePt))
           .subscribeOn(mSchedulerProvider.io())
           .observeOn(mSchedulerProvider.io())
@@ -252,7 +251,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void updateTrip(double latitude, double longitude) {
-      // Ignore invalid request, can't updateTrip a paused trip.
+      // Ignore invalid request, can't update a paused trip.
     }
 
     @Override
@@ -268,8 +267,9 @@ class TrackingPresenter implements TrackingContract.Presenter {
           .subscribeOn(mSchedulerProvider.io())
           .observeOn(mSchedulerProvider.ui())
           .subscribe(() -> {
+            if (mService == null || !mService.isActive()) { return; }
+            mService.stopService();
             mCurrentTripState = mNoTripTripState;
-            mCurrentTripState.cancelTrip();
           }, Throwable::printStackTrace);
 
       // add to execution queue
@@ -286,12 +286,18 @@ class TrackingPresenter implements TrackingContract.Presenter {
             .subscribeOn(mSchedulerProvider.io())
             .observeOn(mSchedulerProvider.ui())
             .subscribe(() -> {
+              if (mService == null || !mService.isActive()) { return; }
+              mService.stopService();
               mCurrentTripState = mNoTripTripState;
-              mCurrentTripState.completeTrip();
             }, Throwable::printStackTrace);
 
         // add to execution queue
         mCompositeDisposable.add(disposable);
+      } else {
+        // just stop the service
+        if (mService == null || !mService.isActive()) { return; }
+        mService.stopService();
+        mCurrentTripState = mNoTripTripState;
       }
     }
   }

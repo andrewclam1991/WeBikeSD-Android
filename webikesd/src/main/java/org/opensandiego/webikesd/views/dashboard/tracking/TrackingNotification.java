@@ -35,7 +35,7 @@ final class TrackingNotification {
    * @return a foreground notification that shows user
    */
   @NonNull
-  static Notification buildTrackingNotification(@NonNull Context context) {
+  static Notification build(@NonNull Context context) {
     NotificationManager notificationManager = (NotificationManager)
         context.getSystemService(NOTIFICATION_SERVICE);
     assert notificationManager != null;

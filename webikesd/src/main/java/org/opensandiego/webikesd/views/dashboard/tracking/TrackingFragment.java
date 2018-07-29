@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -109,12 +110,11 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
   @Override
   public void onStart() {
     super.onStart();
-    if (getActivity() != null) {
+    FragmentActivity parentActivity = getActivity();
+    if (parentActivity != null) {
       // Bind service
-      Intent intent = new Intent(getActivity(), TrackingService.class);
-      getActivity().bindService(intent, getServiceConnection(), Context.BIND_AUTO_CREATE);
-      // Start the service, if not already started
-      TrackingService.startService(getActivity());
+      Intent intent = new Intent(parentActivity, TrackingService.class);
+      parentActivity.bindService(intent, getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
 
   }
@@ -122,9 +122,10 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
   @Override
   public void onStop() {
     super.onStop();
-    if (getActivity() != null) {
+    FragmentActivity parentActivity = getActivity();
+    if (parentActivity != null) {
       // Unbind service
-      getActivity().unbindService(getServiceConnection());
+      parentActivity.unbindService(getServiceConnection());
     }
 
     if (mService != null && mBound) {
@@ -198,7 +199,6 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
     task.addOnSuccessListener(response -> {
       /* location setting satisfied */
       if (mService == null || !mBound) { return; }
-      TrackingService.startService(getActivity());
       mService.startTrip();
     });
 
