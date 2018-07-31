@@ -12,7 +12,6 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +23,9 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
 
-import org.opensandiego.webikesd.BuildConfig;
 import org.opensandiego.webikesd.R;
 import org.opensandiego.webikesd.di.ActivityScoped;
+import org.opensandiego.webikesd.views.FragmentServiceBinderListener;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -65,6 +64,9 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
   private boolean mBound = false;
 
   @Nullable
+  private FragmentServiceBinderListener mServiceBinderListener;
+
+  @Nullable
   private TrackingContract.Service mService;
 
   @Nullable
@@ -73,6 +75,23 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
   @Inject
   public TrackingFragment() {
     // Required empty public constructor
+  }
+
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+    if (context instanceof FragmentServiceBinderListener) {
+      mServiceBinderListener = (FragmentServiceBinderListener) context;
+    } else {
+      throw new IllegalArgumentException("Context must implement " +
+          FragmentServiceBinderListener.class.getSimpleName());
+    }
+  }
+
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    mServiceBinderListener = null;
   }
 
   @Override
@@ -113,14 +132,9 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
   public void onStart() {
     super.onStart();
     Timber.d("View onStart(), prepare to bind View to TrackingService...");
-    FragmentActivity parentActivity = getActivity();
-    if (parentActivity != null) {
-      // Bind service
-      Intent intent = new Intent(parentActivity, TrackingService.class);
-      parentActivity.bindService(intent, getServiceConnection(), Context.BIND_AUTO_CREATE);
-      if (BuildConfig.DEBUG) {
-        Timber.d("Called parent activity to bind View to TrackingService...");
-      }
+    if (mServiceBinderListener != null) {
+      mServiceBinderListener.onRequestBindService(TrackingService.class,
+          getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
   }
 
@@ -134,11 +148,8 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
       Timber.d("Service is active, called to drop View.");
     }
 
-    FragmentActivity parentActivity = getActivity();
-    if (parentActivity != null) {
-      // Unbind service
-      parentActivity.unbindService(getServiceConnection());
-      Timber.d("Called parent activity to unbind View from TrackingService...");
+    if (mServiceBinderListener != null) {
+      mServiceBinderListener.onRequestUnbindService(getServiceConnection());
     }
   }
 

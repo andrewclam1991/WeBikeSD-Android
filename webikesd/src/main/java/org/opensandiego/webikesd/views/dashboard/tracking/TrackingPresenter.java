@@ -280,6 +280,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
             .observeOn(mSchedulerProvider.ui())
             .subscribe(() -> {
               if (mService == null || !mService.isActive()) { return; }
+              mService.stopLocationUpdates();
               mService.stopService();
               mCurrentTripState = mNoTripTripState;
             }, Throwable::printStackTrace);
@@ -306,6 +307,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
             .observeOn(mSchedulerProvider.ui())
             .subscribe(() -> {
               if (mService == null || !mService.isActive()) { return; }
+              mService.stopLocationUpdates();
               mService.stopService();
               mCurrentTripState = mNoTripTripState;
             }, Throwable::printStackTrace);
