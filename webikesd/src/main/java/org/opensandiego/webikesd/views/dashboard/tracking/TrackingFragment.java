@@ -148,8 +148,9 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
       Timber.d("Service is active, called to drop View.");
     }
 
-    if (mServiceBinderListener != null) {
+    if (mServiceBinderListener != null && mBound) {
       mServiceBinderListener.onRequestUnbindService(getServiceConnection());
+      mBound = false;
     }
   }
 

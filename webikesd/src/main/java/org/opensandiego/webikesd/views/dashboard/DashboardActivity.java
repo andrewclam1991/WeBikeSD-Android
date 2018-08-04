@@ -11,7 +11,6 @@ import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 
-import org.opensandiego.webikesd.BuildConfig;
 import org.opensandiego.webikesd.R;
 import org.opensandiego.webikesd.util.ActivityUtils;
 import org.opensandiego.webikesd.util.idlingresource.EspressoIdlingResource;
@@ -87,9 +86,7 @@ public class DashboardActivity extends DaggerAppCompatActivity implements
                                                        int flags) {
     Intent intent = new Intent(this, serviceClass);
     bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-    if (BuildConfig.DEBUG) {
-      Timber.d("Called parent activity to bind View to Service class.");
-    }
+    Timber.d("Called parent activity to bind View to Service class.");
   }
 
 

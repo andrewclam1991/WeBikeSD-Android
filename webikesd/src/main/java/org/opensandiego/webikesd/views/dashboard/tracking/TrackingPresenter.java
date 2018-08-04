@@ -187,6 +187,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
     @Override
     public void updateTrip(double latitude, double longitude) {
       Timber.d("updateTrip(), handle update.");
+      Timber.d("got location latitude: %s1 longitude: %s2", latitude, longitude);
 
       // Create pt object from location data
       String id = UUID.randomUUID().toString();
@@ -214,7 +215,6 @@ class TrackingPresenter implements TrackingContract.Presenter {
       Disposable disposable = mCyclePtRepo.add(mLastKnownCyclePoint)
           .andThen(mTripCyclePtRepo.add(tripCyclePt))
           .subscribeOn(mSchedulerProvider.io())
-          .observeOn(mSchedulerProvider.io())
           .subscribe();
 
       // add to execution queue
