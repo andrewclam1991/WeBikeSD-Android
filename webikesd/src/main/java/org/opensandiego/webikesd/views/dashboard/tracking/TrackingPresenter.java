@@ -316,7 +316,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
         mCompositeDisposable.add(disposable);
       } else {
         // just stop the service
-        Timber.d("no trip data to save.");
+        Timber.d("no trip data to save, just stop service.");
         if (mService == null || !mService.isActive()) { return; }
         mService.stopService();
         mCurrentTripState = mNoTripTripState;
