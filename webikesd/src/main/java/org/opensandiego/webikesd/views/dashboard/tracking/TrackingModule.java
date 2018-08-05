@@ -23,12 +23,12 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class TrackingModule {
   @FragmentScoped
   @ContributesAndroidInjector
-  abstract TrackingFragment trackingFragment();
+  abstract TrackingFragment providesFragment();
 
   @NonNull
   @ServiceScoped
   @Binds
-  abstract TrackingContract.Presenter trackingPresenter(TrackingPresenter presenter);
+  abstract TrackingContract.Presenter providesPresenter(TrackingPresenter presenter);
 
   @NonNull
   @Provides

@@ -16,6 +16,7 @@ import org.opensandiego.webikesd.util.ActivityUtils;
 import org.opensandiego.webikesd.util.idlingresource.EspressoIdlingResource;
 import org.opensandiego.webikesd.views.FragmentServiceBinderListener;
 import org.opensandiego.webikesd.views.dashboard.monitor.MonitorFragment;
+import org.opensandiego.webikesd.views.dashboard.progressupdate.ProgressFragment;
 import org.opensandiego.webikesd.views.dashboard.tracking.TrackingFragment;
 
 import javax.inject.Inject;
@@ -39,6 +40,9 @@ public class DashboardActivity extends DaggerAppCompatActivity implements
   @Inject
   Lazy<TrackingFragment> mTrackingFragmentProvider;
 
+  @Inject
+  Lazy<ProgressFragment> mProgressFragmentProvider;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -54,6 +58,7 @@ public class DashboardActivity extends DaggerAppCompatActivity implements
 
     setupMonitorFragment();
     setupTrackingFragment();
+    setupProgressFragment();
   }
 
   private void setupMonitorFragment() {
@@ -77,6 +82,18 @@ public class DashboardActivity extends DaggerAppCompatActivity implements
       fragment = mTrackingFragmentProvider.get();
       ActivityUtils.addFragmentToActivity(
           getSupportFragmentManager(), fragment, R.id.fragment_container_bottom);
+    }
+  }
+
+  private void setupProgressFragment() {
+    ProgressFragment fragment = (ProgressFragment) getSupportFragmentManager()
+        .findFragmentById(R.id.fragment_container_center);
+
+    if (fragment == null) {
+      // Create the fragment
+      fragment = mProgressFragmentProvider.get();
+      ActivityUtils.addFragmentToActivity(
+          getSupportFragmentManager(), fragment, R.id.fragment_container_center);
     }
   }
 

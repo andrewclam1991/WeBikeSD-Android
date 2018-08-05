@@ -16,6 +16,9 @@
     <string name="monitor_trip_location_status_title">Location Status:</string>
     <string name="title_activity_dashboard">Dashboard</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <!-- Tracking Service -->
 
 </resources>

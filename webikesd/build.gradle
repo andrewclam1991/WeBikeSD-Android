@@ -38,6 +38,7 @@ dependencies {
 
     // Android architecture lifecycle components dependencies
     implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
+//    implementation 'androidx.legacy:legacy-support-v4:1.0.0-beta01'
     annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
 
     // Room components dependencies

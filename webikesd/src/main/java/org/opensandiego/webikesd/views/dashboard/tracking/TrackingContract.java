@@ -1,12 +1,12 @@
 package org.opensandiego.webikesd.views.dashboard.tracking;
 
-import android.support.annotation.NonNull;
-
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 
 import org.opensandiego.webikesd.views.BasePresenter;
 import org.opensandiego.webikesd.views.BaseView;
+
+import io.reactivex.annotations.NonNull;
 
 interface TrackingContract {
 
@@ -17,7 +17,7 @@ interface TrackingContract {
   }
 
   interface Service extends BaseView, TripState {
-    void setView(View view);
+    void setView(@NonNull View view);
 
     void dropView();
 

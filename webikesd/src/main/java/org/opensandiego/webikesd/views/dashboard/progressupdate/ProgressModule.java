@@ -1,4 +1,4 @@
-package org.opensandiego.webikesd.views.dashboard.monitor;
+package org.opensandiego.webikesd.views.dashboard.progressupdate;
 
 
 import android.support.annotation.NonNull;
@@ -12,16 +12,17 @@ import dagger.android.ContributesAndroidInjector;
 
 /**
  * This is a Dagger module. We use this to pass in the View dependency to the
- * {@link MonitorPresenter}.
+ * {@link ProgressPresenter}.
  */
 @Module
-public abstract class MonitorModule {
+public abstract class ProgressModule {
   @FragmentScoped
   @ContributesAndroidInjector
-  abstract MonitorFragment providesFragment();
+  abstract ProgressFragment providesFragment();
 
   @NonNull
   @ActivityScoped
   @Binds
-  abstract MonitorContract.Presenter providesPresenter(MonitorPresenter presenter);
+  abstract ProgressContract.Presenter providesPresenter(ProgressPresenter presenter);
+
 }

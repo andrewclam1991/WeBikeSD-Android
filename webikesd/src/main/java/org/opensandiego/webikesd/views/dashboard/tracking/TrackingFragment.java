@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +36,7 @@ import timber.log.Timber;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link DaggerFragment} subclass.
  * This {@link TrackingContract.View} implementation is responsible for
  * 1. Request necessary user permissions with prompts.
  * 2. Check if location settings satisfies requirements.
