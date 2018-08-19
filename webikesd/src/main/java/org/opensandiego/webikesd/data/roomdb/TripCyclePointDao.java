@@ -42,7 +42,7 @@ public interface TripCyclePointDao extends BaseDao<TripCyclePoint> {
   @Query("SELECT cycle_pts.uid, cycle_pts.time, cycle_pts.accuracy, cycle_pts.altitude, " +
       " cycle_pts.lat, cycle_pts.lgt, cycle_pts.speed " +
       "FROM cycle_pts " +
-      "INNER JOIN trip_cycle_pts on trip_cycle_pts.tripUid == cycle_pts.uid " +
+      "INNER JOIN trip_cycle_pts on trip_cycle_pts.cyclePtUid == cycle_pts.uid " +
       "INNER JOIN trips ON trip_cycle_pts.tripUid == trips.uid " +
       "WHERE trips.uid LIKE :tripId ")
   Flowable<List<CyclePoint>> getCyclePtsByTripId(String tripId);

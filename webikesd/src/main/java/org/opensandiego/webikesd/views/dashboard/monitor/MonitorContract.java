@@ -1,9 +1,9 @@
-package org.opensandiego.webikesd.views.monitor;
+package org.opensandiego.webikesd.views.dashboard.monitor;
 
 import org.opensandiego.webikesd.views.BasePresenter;
 import org.opensandiego.webikesd.views.BaseView;
 
-public interface MonitorContract {
+interface MonitorContract {
 
   interface View extends BaseView {
     void showTripTime(long duration);

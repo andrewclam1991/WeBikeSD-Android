@@ -1,4 +1,4 @@
-package org.opensandiego.webikesd.views.tracking;
+package org.opensandiego.webikesd.views.dashboard.tracking;
 
 
 import android.Manifest;
@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,7 @@ import com.google.android.gms.tasks.Task;
 
 import org.opensandiego.webikesd.R;
 import org.opensandiego.webikesd.di.ActivityScoped;
+import org.opensandiego.webikesd.views.FragmentServiceBinderListener;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -32,10 +32,11 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dagger.android.support.DaggerFragment;
+import timber.log.Timber;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link DaggerFragment} subclass.
  * This {@link TrackingContract.View} implementation is responsible for
  * 1. Request necessary user permissions with prompts.
  * 2. Check if location settings satisfies requirements.
@@ -46,20 +47,23 @@ import dagger.android.support.DaggerFragment;
 @ActivityScoped
 public class TrackingFragment extends DaggerFragment implements TrackingContract.View {
 
-  @BindView(R.id.fragment_monitor_start_trip_btn)
+  @BindView(R.id.fragment_tracking_start_trip_btn)
   View mStartTripBtn;
 
-  @BindView(R.id.fragment_monitor_pause_trip_btn)
+  @BindView(R.id.fragment_tracking_pause_trip_btn)
   View mPauseTripBtn;
 
-  @BindView(R.id.fragment_monitor_cancel_trip_btn)
+  @BindView(R.id.fragment_tracking_cancel_trip_btn)
   View mCancelTripBtn;
 
-  @BindView(R.id.fragment_monitor_complete_trip_btn)
+  @BindView(R.id.fragment_tracking_complete_trip_btn)
   View mCompleteTripBtn;
 
   // Details that defines callbacks for service binding, passed to bindService()
   private boolean mBound = false;
+
+  @Nullable
+  private FragmentServiceBinderListener mServiceBinderListener;
 
   @Nullable
   private TrackingContract.Service mService;
@@ -70,6 +74,23 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
   @Inject
   public TrackingFragment() {
     // Required empty public constructor
+  }
+
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+    if (context instanceof FragmentServiceBinderListener) {
+      mServiceBinderListener = (FragmentServiceBinderListener) context;
+    } else {
+      throw new IllegalArgumentException("Context must implement " +
+          FragmentServiceBinderListener.class.getSimpleName());
+    }
+  }
+
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    mServiceBinderListener = null;
   }
 
   @Override
@@ -109,26 +130,25 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
   @Override
   public void onStart() {
     super.onStart();
-    if (getActivity() != null) {
-      // Bind service
-      Intent intent = new Intent(getActivity(), TrackingService.class);
-      getActivity().bindService(intent, getServiceConnection(), Context.BIND_AUTO_CREATE);
-      // Start the service, if not already started
-      TrackingService.startService(getActivity());
+    Timber.d("View onStart(), prepare to bind View to TrackingService...");
+    if (mServiceBinderListener != null) {
+      mServiceBinderListener.onRequestBindService(TrackingService.class,
+          getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
-
   }
 
   @Override
   public void onStop() {
     super.onStop();
-    if (getActivity() != null) {
-      // Unbind service
-      getActivity().unbindService(getServiceConnection());
+    Timber.d("View onStop(), prepare to unbind View from TrackingService...");
+
+    if (mService != null && mService.isActive()) {
+      mService.dropView();
+      Timber.d("Service is active, called to drop View.");
     }
 
-    if (mService != null && mBound) {
-      mService.dropView();
+    if (mServiceBinderListener != null && mBound) {
+      mServiceBinderListener.onRequestUnbindService(getServiceConnection());
       mBound = false;
     }
   }
@@ -138,6 +158,7 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
    *
    * @return instance of a {@link ServiceConnection} callback
    */
+  @NonNull
   private ServiceConnection getServiceConnection() {
     if (mServiceConnection == null) {
       mServiceConnection = new ServiceConnection() {
@@ -147,10 +168,14 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
           mService = binder.getService();
           mService.setView(TrackingFragment.this);
           mBound = true;
+          Timber.d("View bound to TrackingService.");
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName arg0) { mBound = false; }
+        public void onServiceDisconnected(ComponentName arg0) {
+          mBound = false;
+          Timber.d("View is unbound from TrackingService.");
+        }
       };
     }
     return mServiceConnection;
@@ -198,7 +223,6 @@ public class TrackingFragment extends DaggerFragment implements TrackingContract
     task.addOnSuccessListener(response -> {
       /* location setting satisfied */
       if (mService == null || !mBound) { return; }
-      TrackingService.startService(getActivity());
       mService.startTrip();
     });
 

@@ -64,6 +64,7 @@ public abstract class LocalDataSource<E extends BaseModel> implements DataSource
     });
   }
 
+  @NonNull
   @Override
   public Completable delete(@NonNull String entityId) {
     return Completable.create(emitter -> {
@@ -72,6 +73,7 @@ public abstract class LocalDataSource<E extends BaseModel> implements DataSource
     });
   }
 
+  @NonNull
   @Override
   public Completable deleteAll() {
     return Completable.create(emitter -> {

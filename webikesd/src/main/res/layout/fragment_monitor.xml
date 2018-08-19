@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".views.dashboard.monitor.MonitorFragment">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="24dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="24dp" />
+
+    <!-- Trip Time -->
+    <TextView
+        android:id="@+id/fragment_monitor_trip_time_title_tv"
+        style="@style/MonitorTripFieldTitle"
+        android:text="@string/monitor_trip_time_title"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/fragment_monitor_trip_time_value_tv"
+        style="@style/MonitorTripFieldValue"
+        app:layout_constraintBottom_toBottomOf="@id/fragment_monitor_trip_time_title_tv"
+        app:layout_constraintEnd_toEndOf="@id/guideline_end"
+        app:layout_constraintStart_toEndOf="@id/fragment_monitor_trip_time_title_tv"
+        app:layout_constraintTop_toTopOf="@id/fragment_monitor_trip_time_title_tv"
+        tools:text="@string/monitor_trip_field_value_default" />
+
+    <!-- Trip Speed -->
+    <TextView
+        android:id="@+id/fragment_monitor_trip_speed_title_tv"
+        style="@style/MonitorTripFieldTitle"
+        android:text="@string/monitor_trip_speed_title"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        app:layout_constraintTop_toBottomOf="@id/fragment_monitor_trip_time_title_tv" />
+
+    <TextView
+        android:id="@+id/fragment_monitor_trip_speed_value_tv"
+        style="@style/MonitorTripFieldValue"
+        app:layout_constraintBottom_toBottomOf="@id/fragment_monitor_trip_speed_title_tv"
+        app:layout_constraintEnd_toEndOf="@id/guideline_end"
+        app:layout_constraintStart_toEndOf="@id/fragment_monitor_trip_speed_title_tv"
+        app:layout_constraintTop_toTopOf="@id/fragment_monitor_trip_speed_title_tv"
+        tools:text="@string/monitor_trip_field_value_default" />
+
+    <!-- Trip Distance -->
+    <TextView
+        android:id="@+id/fragment_monitor_trip_distance_title_tv"
+        style="@style/MonitorTripFieldTitle"
+        android:text="@string/monitor_trip_distance_title"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        app:layout_constraintTop_toBottomOf="@id/fragment_monitor_trip_speed_title_tv" />
+
+    <TextView
+        android:id="@+id/fragment_monitor_trip_distance_value_tv"
+        style="@style/MonitorTripFieldValue"
+        app:layout_constraintBottom_toBottomOf="@id/fragment_monitor_trip_distance_title_tv"
+        app:layout_constraintEnd_toEndOf="@id/guideline_end"
+        app:layout_constraintStart_toEndOf="@id/fragment_monitor_trip_distance_title_tv"
+        app:layout_constraintTop_toTopOf="@id/fragment_monitor_trip_distance_title_tv"
+        tools:text="@string/monitor_trip_field_value_default" />
+
+    <!-- Trip Status -->
+    <TextView
+        android:id="@+id/fragment_monitor_trip_status_title_tv"
+        style="@style/MonitorTripFieldTitle"
+        android:text="@string/monitor_trip_status_title"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        app:layout_constraintTop_toBottomOf="@id/fragment_monitor_trip_distance_title_tv" />
+
+    <TextView
+        android:id="@+id/fragment_monitor_trip_status_value_tv"
+        style="@style/MonitorTripFieldValue"
+        app:layout_constraintBottom_toBottomOf="@id/fragment_monitor_trip_status_title_tv"
+        app:layout_constraintEnd_toEndOf="@id/guideline_end"
+        app:layout_constraintStart_toEndOf="@id/fragment_monitor_trip_status_title_tv"
+        app:layout_constraintTop_toTopOf="@id/fragment_monitor_trip_status_title_tv"
+        tools:text="@string/monitor_trip_field_value_default" />
+
+    <!-- Location Status -->
+    <TextView
+        android:id="@+id/fragment_monitor_trip_location_status_title_tv"
+        style="@style/MonitorTripFieldTitle"
+        android:text="@string/monitor_trip_location_status_title"
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        app:layout_constraintTop_toBottomOf="@id/fragment_monitor_trip_status_title_tv" />
+
+    <TextView
+        android:id="@+id/fragment_monitor_trip_location_status_value_tv"
+        style="@style/MonitorTripFieldValue"
+        app:layout_constraintBottom_toBottomOf="@id/fragment_monitor_trip_location_status_title_tv"
+        app:layout_constraintEnd_toEndOf="@id/guideline_end"
+        app:layout_constraintStart_toEndOf="@id/fragment_monitor_trip_location_status_title_tv"
+        app:layout_constraintTop_toTopOf="@id/fragment_monitor_trip_location_status_title_tv"
+        tools:text="@string/monitor_trip_field_value_default" />
+
+</android.support.constraint.ConstraintLayout>

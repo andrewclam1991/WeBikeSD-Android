@@ -1,27 +1,30 @@
-package org.opensandiego.webikesd.views.tracking;
+package org.opensandiego.webikesd.views.dashboard.tracking;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 
 import org.opensandiego.webikesd.data.model.CyclePoint;
 import org.opensandiego.webikesd.data.model.Trip;
 import org.opensandiego.webikesd.data.model.TripCyclePoint;
+import org.opensandiego.webikesd.data.model.TripId;
 import org.opensandiego.webikesd.data.source.annotations.Repo;
 import org.opensandiego.webikesd.data.source.cyclepoint.CyclePointDataSource;
 import org.opensandiego.webikesd.data.source.trip.TripDataSource;
 import org.opensandiego.webikesd.data.source.tripcyclepoint.TripCyclePointDataSource;
-import org.opensandiego.webikesd.util.schedulers.SchedulerProvider;
+import org.opensandiego.webikesd.di.ServiceScoped;
+import org.opensandiego.webikesd.util.schedulers.BaseSchedulerProvider;
 
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
-@Singleton
+@ServiceScoped
 class TrackingPresenter implements TrackingContract.Presenter {
 
   // Services (Invisible View)
@@ -46,7 +49,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
   @NonNull
   private final CyclePointDataSource mCyclePtRepo;
   @NonNull
-  private final SchedulerProvider mSchedulerProvider;
+  private final BaseSchedulerProvider mSchedulerProvider;
   @NonNull
   private final CompositeDisposable mCompositeDisposable;
   @NonNull
@@ -58,8 +61,8 @@ class TrackingPresenter implements TrackingContract.Presenter {
   TrackingPresenter(@NonNull @Repo TripCyclePointDataSource tripCyclePtRepo,
                     @NonNull @Repo TripDataSource tripDataRepo,
                     @NonNull @Repo CyclePointDataSource cyclePtRepo,
-                    @NonNull SchedulerProvider schedulerProvider,
-                    @NonNull String tripId) {
+                    @NonNull BaseSchedulerProvider schedulerProvider,
+                    @NonNull @TripId String tripId) {
     mTripCyclePtRepo = tripCyclePtRepo;
     mTripDataRepo = tripDataRepo;
     mCyclePtRepo = cyclePtRepo;
@@ -110,8 +113,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
   @Override
   public void updateTrip(double latitude, double longitude) {
-    mCurrentTripState.updateTrip
-        (latitude, longitude);
+    mCurrentTripState.updateTrip(latitude, longitude);
   }
 
   @Override
@@ -130,17 +132,18 @@ class TrackingPresenter implements TrackingContract.Presenter {
   private class NoTripState implements TrackingContract.TripState {
     @Override
     public void startTrip() {
-      // create and startTrip a new trip
-      Trip trip = new Trip(mTripId);
+      Timber.d("startTrip(), handle starting a new trip.");
+      mTrip = new Trip(mTripId);
 
       Disposable disposable = mTripDataRepo
-          .add(trip)
+          .add(mTrip)
           .subscribeOn(mSchedulerProvider.io())
           .observeOn(mSchedulerProvider.ui())
           .subscribe(() -> {
             mCurrentTripState = mTripStartedTripState;
             if (mService == null || !mService.isActive()) { return; }
             mService.startLocationUpdates();
+            Timber.d("new trip with id %s started successfully.", mTripId);
           }, Throwable::printStackTrace);
 
       // add to execution queue
@@ -149,26 +152,22 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void updateTrip(double latitude, double longitude) {
-      // Ignore invalid request, no trip to update
+      Timber.d("updateTrip(), invalid request, no trip to update.");
     }
 
     @Override
     public void pauseTrip() {
-      // Ignore invalid request, no trip to pause
+      Timber.d("pauseTrip(), invalid request, no trip to pause.");
     }
 
     @Override
     public void cancelTrip() {
-      if (mService == null || !mService.isActive()) { return; }
-      mService.stopLocationUpdates();
-      mService.stopService();
+      Timber.d("cancelTrip(), invalid request, no trip to cancel.");
     }
 
     @Override
     public void completeTrip() {
-      if (mService == null || !mService.isActive()) { return; }
-      mService.stopLocationUpdates();
-      mService.stopService();
+      Timber.d("completeTrip(), invalid request, no trip to complete.");
     }
   }
 
@@ -182,11 +181,14 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void startTrip() {
-      // Ignore invalid request, trip already started
+      Timber.d("startTrip(), invalid request, trip already started.");
     }
 
     @Override
     public void updateTrip(double latitude, double longitude) {
+      Timber.d("updateTrip(), handle update.");
+      Timber.d("got location latitude: %s1 longitude: %s2", latitude, longitude);
+
       // Create pt object from location data
       String id = UUID.randomUUID().toString();
       long timestamp = System.currentTimeMillis();
@@ -194,7 +196,6 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
       if (mLastKnownCyclePoint == null) {
         // first pt, no speed
-        mLastKnownCyclePoint = currentPt;
         currentPt.setSpeed(0);
       } else {
         // TODO calculate speed base on distance and time elapsed
@@ -202,16 +203,18 @@ class TrackingPresenter implements TrackingContract.Presenter {
         currentPt.setSpeed(10);
       }
 
+      // update last known cycle point with current
+      mLastKnownCyclePoint = currentPt;
+
       // Create trip <-> association record
       String tripCyclePtUid = UUID.randomUUID().toString();
-      TripCyclePoint tripCyclePt = new TripCyclePoint(tripCyclePtUid, mTripId, currentPt.getUid());
+      TripCyclePoint tripCyclePt = new TripCyclePoint(tripCyclePtUid, mTripId,
+          mLastKnownCyclePoint.getUid());
 
       // Update the cycle point and then add the trip <-> point association record
-      Disposable disposable = mCyclePtRepo
-          .add(currentPt)
+      Disposable disposable = mCyclePtRepo.add(mLastKnownCyclePoint)
           .andThen(mTripCyclePtRepo.add(tripCyclePt))
           .subscribeOn(mSchedulerProvider.io())
-          .observeOn(mSchedulerProvider.io())
           .subscribe();
 
       // add to execution queue
@@ -220,6 +223,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void pauseTrip() {
+      Timber.d("pauseTrip(), change to paused state.");
       mCurrentTripState = mTripPausedTripState;
       if (mService == null || !mService.isActive()) { return; }
       mService.stopLocationUpdates();
@@ -227,12 +231,14 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void cancelTrip() {
+      Timber.d("cancelTrip(), change to paused state, delegate pause trip to new state.");
       mCurrentTripState = mTripPausedTripState;
       mCurrentTripState.cancelTrip();
     }
 
     @Override
     public void completeTrip() {
+      Timber.d("completeTrip(), change to paused state, delegate complete trip to new state.");
       mCurrentTripState = mTripPausedTripState;
       mCurrentTripState.completeTrip();
     }
@@ -246,6 +252,7 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void startTrip() {
+      Timber.d("startTrip(), handle restarting a paused trip.");
       mCurrentTripState = mTripStartedTripState;
       if (mService == null || !mService.isActive()) { return; }
       mService.startLocationUpdates();
@@ -253,46 +260,66 @@ class TrackingPresenter implements TrackingContract.Presenter {
 
     @Override
     public void updateTrip(double latitude, double longitude) {
-      // Ignore invalid request, can't updateTrip a paused trip.
+      Timber.d("updateTrip(), invalid request, can't update a paused trip.");
     }
 
     @Override
     public void pauseTrip() {
-      // Ignore invalid request, trip already paused.
+      Timber.d("pauseTrip(), invalid request, trip already paused.");
     }
 
     @Override
     public void cancelTrip() {
-      // cancel trip by deleting from data source
-      Disposable disposable = mTripDataRepo
-          .delete(mTripId)
-          .subscribeOn(mSchedulerProvider.io())
-          .observeOn(mSchedulerProvider.ui())
-          .subscribe(() -> {
-            mCurrentTripState = mNoTripTripState;
-            mCurrentTripState.cancelTrip();
-          }, Throwable::printStackTrace);
+      Timber.d("cancelTrip(), handle deleting instance trip and stop service upon complete.");
 
-      // add to execution queue
-      mCompositeDisposable.add(disposable);
+      // cancel trip by deleting from data source
+      if (!Strings.isNullOrEmpty(mTripId)) {
+        Disposable disposable = mTripDataRepo
+            .delete(mTripId)
+            .subscribeOn(mSchedulerProvider.io())
+            .observeOn(mSchedulerProvider.ui())
+            .subscribe(() -> {
+              if (mService == null || !mService.isActive()) { return; }
+              mService.stopLocationUpdates();
+              mService.stopService();
+              mCurrentTripState = mNoTripTripState;
+            }, Throwable::printStackTrace);
+
+        // add to execution queue
+        mCompositeDisposable.add(disposable);
+      } else {
+        Timber.w("Unable to cancel trip, no instance tripId token");
+      }
     }
 
     @Override
     public void completeTrip() {
+      Timber.d("completeTrip(), handle persisting instance trip and stop service upon complete.");
+
       // complete trip iff there is data to save
       if (mTrip != null) {
+        Timber.d("has trip data to save, save trip id: %s", mTripId);
+
         mTrip.setEndTime(System.currentTimeMillis());
         Disposable disposable = mTripDataRepo
             .add(mTrip)
             .subscribeOn(mSchedulerProvider.io())
             .observeOn(mSchedulerProvider.ui())
             .subscribe(() -> {
+              if (mService == null || !mService.isActive()) { return; }
+              mService.stopLocationUpdates();
+              mService.stopService();
               mCurrentTripState = mNoTripTripState;
-              mCurrentTripState.completeTrip();
             }, Throwable::printStackTrace);
 
         // add to execution queue
         mCompositeDisposable.add(disposable);
+      } else {
+        // just stop the service
+        Timber.d("no trip data to save, just stop service.");
+        if (mService == null || !mService.isActive()) { return; }
+        mService.stopService();
+        mCurrentTripState = mNoTripTripState;
       }
     }
   }

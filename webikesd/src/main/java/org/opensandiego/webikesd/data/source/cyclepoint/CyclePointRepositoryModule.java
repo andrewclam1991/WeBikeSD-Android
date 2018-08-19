@@ -17,9 +17,9 @@ import dagger.Module;
 @Module
 abstract public class CyclePointRepositoryModule {
 
-  @Binds
   @NonNull
   @Singleton
+  @Binds
   @Repo
   abstract CyclePointDataSource providesRepository(@NonNull CyclePointRepository repository);
 
@@ -29,7 +29,6 @@ abstract public class CyclePointRepositoryModule {
   @Local
   abstract CyclePointDataSource providesLocalDataSource(@NonNull CyclePointLocalDataSource
                                                             dataSource);
-
   @NonNull
   @Singleton
   @Binds

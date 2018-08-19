@@ -1,7 +1,9 @@
-package org.opensandiego.webikesd.di;
+package org.opensandiego.webikesd.di.modules;
 
 import android.app.Application;
 import android.content.Context;
+
+import org.opensandiego.webikesd.di.AppComponent;
 
 import dagger.Binds;
 import dagger.Module;

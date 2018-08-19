@@ -17,7 +17,7 @@ import io.reactivex.Flowable;
 public interface DataSource<E extends BaseModel> {
 
   /**
-   * Get item by id of type {@link E} from its model layer
+   * Get item by id of type {@link E} from its data layer
    *
    * @param id unique id of a {@link E} type
    * @return observable that when subscribed to, would fetch and emit the item
@@ -27,7 +27,7 @@ public interface DataSource<E extends BaseModel> {
   Flowable<Optional<E>> get(@NonNull String id);
 
   /**
-   * Gets all items of type {@link E} from the model layer
+   * Gets all items of type {@link E} from the data layer
    *
    * @return a hot observable that when subscribed to, emits model updates to the
    * list of {@link E} items.
@@ -36,7 +36,7 @@ public interface DataSource<E extends BaseModel> {
   Flowable<List<E>> getAll();
 
   /**
-   * Puts a single item of type {@link E} to the model layer
+   * Puts a single item of type {@link E} to the data layer
    *
    * @param item item to be add into the model layer
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
@@ -46,7 +46,7 @@ public interface DataSource<E extends BaseModel> {
   Completable add(@NonNull E item);
 
   /**
-   * Puts a list of items of type {@link E} to the model layer
+   * Puts a list of items of type {@link E} to the data layer
    *
    * @param items collection of items to be add into the model layer
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
@@ -56,7 +56,7 @@ public interface DataSource<E extends BaseModel> {
   Completable add(@NonNull List<E> items);
 
   /**
-   * Updates a particular item of type {@link E} to the model layer
+   * Updates a particular item of type {@link E} to the data layer
    *
    * @param item the updated item data
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
@@ -66,7 +66,7 @@ public interface DataSource<E extends BaseModel> {
   Completable update(@NonNull E item);
 
   /**
-   * Deletes a particular item by id of type {@link E} from the model layer
+   * Deletes a particular item by id of type {@link E} from the data layer
    *
    * @param id unique id of the item
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
@@ -76,7 +76,7 @@ public interface DataSource<E extends BaseModel> {
   Completable delete(@NonNull String id);
 
   /**
-   * Deletes all items of type {@link E} from the model layer
+   * Deletes all items of type {@link E} from the data layer
    *
    * @return an observable that when subscribed to, emits {@link Completable#complete()}
    * when the operation is completeTrip and error otherwise.

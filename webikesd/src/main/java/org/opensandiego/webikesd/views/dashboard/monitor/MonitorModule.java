@@ -1,5 +1,7 @@
-package org.opensandiego.webikesd.views.monitor;
+package org.opensandiego.webikesd.views.dashboard.monitor;
 
+
+import android.support.annotation.NonNull;
 
 import org.opensandiego.webikesd.di.ActivityScoped;
 import org.opensandiego.webikesd.di.FragmentScoped;
@@ -16,9 +18,10 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class MonitorModule {
   @FragmentScoped
   @ContributesAndroidInjector
-  abstract MonitorFragment monitorFragment();
+  abstract MonitorFragment providesFragment();
 
+  @NonNull
   @ActivityScoped
   @Binds
-  abstract MonitorContract.Presenter monitorPresenter(MonitorPresenter presenter);
+  abstract MonitorContract.Presenter providesPresenter(MonitorPresenter presenter);
 }

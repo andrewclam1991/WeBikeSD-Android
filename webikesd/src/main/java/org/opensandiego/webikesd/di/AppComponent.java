@@ -5,8 +5,13 @@ import android.app.Application;
 import org.opensandiego.webikesd.WeBikeSdApplication;
 import org.opensandiego.webikesd.data.roomdb.AppDatabaseModule;
 import org.opensandiego.webikesd.data.source.cyclepoint.CyclePointRepositoryModule;
+import org.opensandiego.webikesd.data.source.progress.ProgressDataSourceModule;
 import org.opensandiego.webikesd.data.source.trip.TripRepositoryModule;
 import org.opensandiego.webikesd.data.source.tripcyclepoint.TripCyclePointRepositoryModule;
+import org.opensandiego.webikesd.di.modules.ActivityBindingModule;
+import org.opensandiego.webikesd.di.modules.ApplicationModule;
+import org.opensandiego.webikesd.di.modules.SchedulerProviderModule;
+import org.opensandiego.webikesd.di.modules.SharedPreferenceModule;
 
 import javax.inject.Singleton;
 
@@ -29,12 +34,17 @@ import dagger.android.support.AndroidSupportInjectionModule;
  */
 @Singleton
 @Component(modules = {
+    ProgressDataSourceModule.class,
     CyclePointRepositoryModule.class,
     TripRepositoryModule.class,
     TripCyclePointRepositoryModule.class,
     AppDatabaseModule.class,
+
+    // app wide modules
     ApplicationModule.class,
     ActivityBindingModule.class,
+    SchedulerProviderModule.class,
+    SharedPreferenceModule.class,
     AndroidSupportInjectionModule.class})
 public interface AppComponent extends AndroidInjector<WeBikeSdApplication> {
 
